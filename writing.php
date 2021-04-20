@@ -2,24 +2,24 @@
 
 $fileState = file_get_contents('filmHorreur.json');
 
+// var_dump(json_decode($fileState));
 // $fileState = json_encode($fileState);
 
 
 if(isset($_POST['dataTransmitted'])){
 
     $writing = $_POST['dataTransmitted'];
-
-    echo $fileState;
-    var_dump($fileState);    
+    
+    // echo $fileState;
+    // var_dump($fileState);    
     
     $fileState = json_encode($fileState);
-    echo $fileState;
-    var_dump($fileState);
-    $fileState += $writing;
-    echo $fileState;
-    var_dump($fileState);
-    // file_put_contents('filmHorreur.json', $fileState);
+   
+    file_put_contents('filmHorreur.json', '['.$writing.']');
+
     // file_put_contents('filmHorreur.json', $writing);
+   
+    // file_put_contents('filmHorreur.json', $fileState);
 }
 $fileState = json_encode($fileState);
 
