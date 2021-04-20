@@ -18,3 +18,8 @@ const vm = new Vue({
         }
     }
 })
+
+Vue.component('movie-item',{
+    props: ['data'],
+    template: '<div><h1>{{data.original_title}}</h1><p>{{data.overview}}</p><img v-bind:src="\'https://image.tmdb.org/t/p/w500//\'+ data.poster_path" ></div>'
+})

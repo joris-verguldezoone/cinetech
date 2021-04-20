@@ -14,7 +14,7 @@
     <div id="app">
         <p>Indique un id pour avoir des détails sur un film:</p>
         <input v-model="movieId">
-        <p>{{ content }}</p>
+        <movie-item v-bind:data="content"></movie-item>
     </div>
     <script src="index.js" type="text/javascript"></script>
 </body>
