@@ -27,7 +27,7 @@ Vue.component('movie-item',{
         <div>
             <img v-bind:src="\'https://image.tmdb.org/t/p/w500//\'+ data.poster_path" >
             <article>
-                <h1>{{data.original_title}}</h1>
+                <h3>{{data.original_title}}</h3>
                 <p>{{data.overview}}</p>
             </article>
         </div>`

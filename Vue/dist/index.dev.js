@@ -27,5 +27,5 @@ var vm = new Vue({
 });
 Vue.component('movie-item', {
   props: ['data'],
-  template: "\n        <div>\n            <img v-bind:src=\"'https://image.tmdb.org/t/p/w500//'+ data.poster_path\" >\n            <article>\n                <h1>{{data.original_title}}</h1>\n                <p>{{data.overview}}</p>\n            </article>\n        </div>"
+  template: "\n        <div>\n            <img v-bind:src=\"'https://image.tmdb.org/t/p/w500//'+ data.poster_path\" >\n            <article>\n                <h3>{{data.original_title}}</h3>\n                <p>{{data.overview}}</p>\n            </article>\n        </div>"
 });
