@@ -1,37 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-    <script
-        src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-        crossorigin="anonymous">
-    </script>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
-
+    <title>mabite</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 
 </head>
 
 <body>
-
-<div id='test_div' style='background-color:red;'>
-
-
-
-</div>
-    <?php
-    
-
-    
-    ?>
-
+<!-- view app2 -->
+    <div id="app2"> 
+        <h1> {{ content.title }} </h1>
+        <p>Indique un id pour avoir des détails sur un film:</p>
+        <input v-model="movieId">
+        <!-- <movie-item v-bind:data="content"></movie-item> -->
+    </div>
+    <script src="script2.js" type="text/javascript"></script>
 </body>
-<script type="text/javascript" src="script.js"></script>
 
 </html>
