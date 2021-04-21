@@ -11,14 +11,19 @@
 </head>
 
 <body>
-<!-- view app2 -->
+<!-- view app2 
+acces global aux valeur du content dans la div
+-->
     <div id="app2"> 
-        <h1> {{ content.title }} </h1>
-        <p>Indique un id pour avoir des détails sur un film:</p>
+        <!-- <h1> {{ content.title }} </h1>
+        <p>Indique un id pour avoir des détails sur un film:</p> -->
+
         <input v-model="movieId">
-        <!-- <movie-item v-bind:data="content"></movie-item> -->
+        <p v-for="(results, index) in content.json.results" :key="results">{{ content.results.author}}</p>
+        <!-- <movie-item v-for="(results, index) in content.json.results" :key="results">{{ results.author}}</movie-item> -->
+
     </div>
-    <script src="script2.js" type="text/javascript"></script>
 </body>
 
 </html>
+    <script src="script2.js" type="text/javascript"></script>
