@@ -1,0 +1,22 @@
+.carrousel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.carrousel__item {
+  margin: 1vmin;
+  position: relative;
+}
+.carrousel__item img {
+  object-fit: cover;
+  height: 50vh;
+  width: auto;
+}
+.carrousel__item article {
+  padding: 1vmin;
+  position: absolute;
+  height: 15vh;
+  bottom: 0.7vh;
+  background-color: rgba(255, 255, 255, 0.8);
+  overflow-x: scroll;
+}
