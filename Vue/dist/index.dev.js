@@ -25,7 +25,10 @@ var vm = new Vue({
     this.getMovies();
   }
 });
+Vue.component('carrousel', {
+  props: ['data']
+});
 Vue.component('movie-item', {
   props: ['data'],
-  template: "\n        <div>\n            <img v-bind:src=\"'https://image.tmdb.org/t/p/w500//'+ data.poster_path\" >\n            <article>\n                <h3>{{data.original_title}}</h3>\n                <p>{{data.overview}}</p>\n            </article>\n        </div>"
+  template: "\n        <div >\n            <img v-bind:src=\"'https://image.tmdb.org/t/p/w500//'+ data.poster_path\" >\n            <article>\n                <h3>{{data.original_title}}</h3>\n                <p>{{data.overview}}</p>\n            </article>\n        </div>"
 });

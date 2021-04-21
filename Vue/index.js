@@ -21,10 +21,14 @@ const vm = new Vue({
     }
 })
 
+Vue.component('carrousel',{
+    props:['data']
+})
+
 Vue.component('movie-item',{
     props: ['data'],
     template: `
-        <div>
+        <div >
             <img v-bind:src="\'https://image.tmdb.org/t/p/w500//\'+ data.poster_path" >
             <article>
                 <h3>{{data.original_title}}</h3>
