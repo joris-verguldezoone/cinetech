@@ -19,8 +19,16 @@
   bottom: 0;
   object-fit: cover;
   object-position: center;
-  height: 90vh;
   width: auto;
+}
+.carrousel__item .img--big {
+  height: 90vh;
+}
+.carrousel__item .img--small {
+  height: 30vh;
+}
+.carrousel__item .img--medium {
+  height: 60vh;
 }
 .carrousel__item article {
   padding: 1vmin 1vmin 0 1vmin;

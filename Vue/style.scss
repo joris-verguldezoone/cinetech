@@ -16,9 +16,17 @@
             position: relative;
             bottom: 0;
             object-fit: cover;
-            object-position: center;
-            height: 90vh;
+            object-position: center;     
             width: auto;
+        }
+        & .img--big{
+            height: 90vh;
+        }
+        & .img--small{
+            height: 30vh;
+        }
+        & .img--medium{
+            height: 60vh;
         }
         & article {
             padding: 1vmin 1vmin 0 1vmin;
