@@ -40,15 +40,15 @@ Vue.component('movie-item', {
             console.log(this.result.author_details.avatar_path)
         },
         img_avatar() {
-            return this.result.author_details.avatar_path.substring(1)
-            // var test = this.result.author_details.avatar_path.substring(1)
-            // if (test != null) {
-            //     return test;
-            // }
-            // else {
-            //     return test = 'https://cdn4.buysellads.net/uu/1/87530/1616613724-DO-Display-260-x-200-DO-blue.jpg';
-            // }
+            // return this.result.author_details.avatar_path.substring(1)
 
+            var test = this.result.author_details.avatar_path
+            if(test === null){ // DEFAULT_USER_SKIN
+                return test = 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp'
+            }else{
+              return test = this.result.author_details.avatar_path.substring(1)
+                
+            }
         }
         //this obligatoire quand on est pas dans le template
         // this fait reference a component grace au html 

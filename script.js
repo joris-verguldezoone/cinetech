@@ -10,7 +10,7 @@ $(document).ready(function () {
     function CallAPI(page) {
         api_key = "?api_key=4694567a42a4950589090a37a9729f3f";
         $.ajax({
-            url: "https://api.themoviedb.org/3/movie/" + $("#searchInput").val() + "/reviews" + api_key,
+            url: "https://api.themoviedb.org/3/movie/" + $("#searchInput").val() + api_key,
             dataType: "json",
         }).done(function (result, status, xhr) {
             console.log(result)
