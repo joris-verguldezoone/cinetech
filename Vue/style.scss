@@ -1,0 +1,24 @@
+.carrousel{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-y: hidden;
+    &__item{
+        margin: 1vmin;
+        position: relative;
+        & img {
+            object-fit: cover;
+            height: 50vh;
+            width: auto;
+        }
+        & article {
+            padding: 1vmin;
+            position: absolute;
+            height: 15vh;
+            bottom: 0.7vh;
+            background-color: rgba($color: #ffffff, $alpha: 0.8);
+            overflow-x: scroll;
+        }
+        
+    }
+}
