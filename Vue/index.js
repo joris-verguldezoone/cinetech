@@ -17,7 +17,7 @@ const app = Vue.createApp({
     }
 })
 
-app.component('carrousel',{
+app.component('carrousel-custom',{
     data(){
         return {
             results : {}
@@ -66,11 +66,11 @@ app.component('carrousel-item',{
     template: 
         `<div >
             <img @click="toggleVisibility" class="car_item__img" :class="classSizeModifObj" v-bind:src="picLowQual + result.poster_path" >
-            <modal @closeModal="toggleVisibility" @change-page="$emit('changePage',$event)" v-if="show" :result="result"></modal>
+            <modal-custom @closeModal="toggleVisibility" @change-page="$emit('changePage',$event)" v-if="show" :result="result"></modal-custom>
         </div>`
 })
 
-app.component('modal',{
+app.component('modal-custom',{
     data(){
         return {
             picHighQual : api.picHighQual,

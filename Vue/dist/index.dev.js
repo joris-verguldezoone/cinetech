@@ -16,7 +16,7 @@ var app = Vue.createApp({
     this.changePage('testmount');
   }
 });
-app.component('carrousel', {
+app.component('carrousel-custom', {
   data: function data() {
     return {
       results: {}
@@ -62,9 +62,9 @@ app.component('carrousel-item', {
       this.show = this.show === true ? false : true;
     }
   },
-  template: "<div >\n            <img @click=\"toggleVisibility\" class=\"car_item__img\" :class=\"classSizeModifObj\" v-bind:src=\"picLowQual + result.poster_path\" >\n            <modal @closeModal=\"toggleVisibility\" @change-page=\"$emit('changePage',$event)\" v-if=\"show\" :result=\"result\"></modal>\n        </div>"
+  template: "<div >\n            <img @click=\"toggleVisibility\" class=\"car_item__img\" :class=\"classSizeModifObj\" v-bind:src=\"picLowQual + result.poster_path\" >\n            <modal-custom @closeModal=\"toggleVisibility\" @change-page=\"$emit('changePage',$event)\" v-if=\"show\" :result=\"result\"></modal-custom>\n        </div>"
 });
-app.component('modal', {
+app.component('modal-custom', {
   data: function data() {
     return {
       picHighQual: api.picHighQual,
