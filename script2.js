@@ -14,14 +14,7 @@ const vm = new Vue({
                 .then(json => {
                     this.content = json.results
                     console.log(json)
-                    // console.log(json.results.length)
-                    // var str = ''
-                    // for (i = 0; i < result["results"].length; i++) {
-
-                    //     str += data.results[0].author + data.results[0].content + data.results[0].author_details.avatar_path + data.results[0].author_details.rating
-                    // }
-                    // document.getElementById('#app2').innerHTML = str
-                })
+           })
         }
     },
     watch: { // event listener 
