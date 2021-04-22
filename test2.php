@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mabite</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-
+    <!-- <script src="https://unpkg.com/vue@next"></script> -->
 </head>
 
 <body>
@@ -19,9 +19,17 @@ acces global aux valeur du content dans la div
         <p>Indique un id pour avoir des détails sur un film:</p> -->
 
         <input v-model="movieId">
-        <p v-for="(results, index) in content.json.results" :key="results">{{ content.results.author}}</p>
-        <!-- <movie-item v-for="(results, index) in content.json.results" :key="results">{{ results.author}}</movie-item> -->
 
+    <!-- <ul id="array-with-index">
+    <li v-for="(item, index) in items">
+        {{ parentMessage }} - {{ index }} - {{ item.message }}
+    </li>
+    </ul> -->
+        <!-- <p v-for="(results, index) in content.json.results" :key="results">{{ content.results.author}}</p> -->
+        <movie-item v-for="(result, index) in content" v-bind:result="result" :key="index"></movie-item> 
+        <!-- v-bind acces template -->
+
+<!--  : = v bind -->
     </div>
 </body>
 
