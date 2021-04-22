@@ -13,9 +13,9 @@
 
 <body>
     <div id="app">
-        <carrousel size="small" request="/discover/movie" filter="&sort_by=popularity.desc"></carrousel>
-        <carrousel size="medium" request="/discover/movie" filter="&sort_by=release_date.asc"></carrousel>
-        <carrousel size="big" request="/discover/tv" filter="&sort_by=popularity.desc"></carrousel>
+        <carrousel @change-page="changePage($event)" size="small" request="/discover/movie" filter="&sort_by=popularity.desc"></carrousel>
+        <carrousel @change-page="changePage($event)" size="medium" request="/discover/movie" filter="&sort_by=release_date.asc"></carrousel>
+        <carrousel @change-page="changePage($event)" size="big" request="/discover/tv" filter="&sort_by=popularity.desc"></carrousel>
     </div>
 </body>
 

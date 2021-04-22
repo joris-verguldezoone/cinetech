@@ -1,20 +1,34 @@
 "use strict";
 
-var urlApiBase = 'https://api.themoviedb.org/3';
-var urlMovPop = '/discover/movie';
-var apiKey = '?api_key=8f560fa0d81bece7dce9718dd0d51a08';
-var filter = '&sort_by=popularity.desc';
-var vm = new Vue({
-  el: '#app',
-  data: {
-    results: '',
-    movieId: ''
-  },
+var api = {
+  base: 'https://api.themoviedb.org/3',
+  picLowQual: 'https://image.tmdb.org/t/p/w500//',
+  picHighQual: 'https://image.tmdb.org/t/p/original/',
+  key: '?api_key=8f560fa0d81bece7dce9718dd0d51a08'
+};
+var app = Vue.createApp({
   methods: {
-    getMovies: function getMovies() {
+    changePage: function changePage(obj) {
+      console.log(obj);
+    }
+  },
+  mounted: function mounted() {
+    this.changePage('testmount');
+  }
+});
+app.component('carrousel', {
+  data: function data() {
+    return {
+      results: {}
+    };
+  },
+  props: ['size', 'request', 'filter'],
+  methods: {
+    getData: function getData() {
       var _this = this;
 
-      fetch(urlApiBase + urlMovPop + apiKey + filter).then(function (response) {
+      var url = api.base + this.request + api.key + this.filter;
+      fetch(url).then(function (response) {
         return response.json();
       }).then(function (json) {
         return _this.results = json.results;
@@ -22,13 +36,57 @@ var vm = new Vue({
     }
   },
   mounted: function mounted() {
-    this.getMovies();
-  }
+    this.getData();
+  },
+  template: "<div class=\"carrousel\" >\n            <carrousel-item @change-page=\"$emit('changePage',$event)\" class=\"carrousel__item\" v-for=\"result in results\" :result=\"result\" :size=\"size\" :key=\"result.id\"></carrousel-item>\n        </div>"
 });
-Vue.component('carrousel', {
-  props: ['data']
+app.component('carrousel-item', {
+  data: function data() {
+    return {
+      show: false,
+      picLowQual: api.picLowQual
+    };
+  },
+  props: ['result', 'size'],
+  computed: {
+    classSizeModifObj: function classSizeModifObj() {
+      return {
+        'car_item__img--big': this.size === 'big' ? true : false,
+        'car_item__img--medium': this.size === 'medium' ? true : false,
+        'car_item__img--small': this.size === 'small' ? true : false
+      };
+    }
+  },
+  methods: {
+    toggleVisibility: function toggleVisibility() {
+      this.show = this.show === true ? false : true;
+    }
+  },
+  template: "<div >\n            <img @click=\"toggleVisibility\" class=\"car_item__img\" :class=\"classSizeModifObj\" v-bind:src=\"picLowQual + result.poster_path\" >\n            <modal @closeModal=\"toggleVisibility\" @change-page=\"$emit('changePage',$event)\" v-if=\"show\" :result=\"result\"></modal>\n        </div>"
 });
-Vue.component('movie-item', {
-  props: ['data'],
-  template: "\n        <div >\n            <img v-bind:src=\"'https://image.tmdb.org/t/p/w500//'+ data.poster_path\" >\n            <article>\n                <h3>{{data.original_title}}</h3>\n                <p>{{data.overview}}</p>\n            </article>\n        </div>"
+app.component('modal', {
+  data: function data() {
+    return {
+      picHighQual: api.picHighQual,
+      type: '',
+      id: this.result.id
+    };
+  },
+  props: ['result'],
+  computed: {
+    img_path: function img_path() {
+      return this.result.backdrop_path != null ? this.result.backdrop_path : this.result.poster_path;
+    }
+  },
+  methods: {
+    titleHandeling: function titleHandeling() {
+      this.type = typeof this.result.title !== 'undefined' ? 'movie' : 'tv';
+      this.result.title = typeof this.result.title !== 'undefined' ? this.result.title : this.result.name;
+    }
+  },
+  mounted: function mounted() {
+    this.titleHandeling();
+  },
+  template: "<div class=\"modal\">\n            <button @click=\"$emit('closeModal')\" class=\"modal__close_btn\">X</button>\n            <img class=\"modal__photo\" v-bind:src=\"picHighQual + img_path\" >\n            <div class=\"modal__content\">\n                <h3>{{ result.title }}</h3>\n                <p>Overview : {{ result.overview }}</p>\n                <p>Vote : {{ result.vote_average }}</p>\n                <button @click=\"$emit('changePage', { type : type, id : id })\">More information</button>\n            </div>\n        </div>"
 });
+var vm = app.mount('#app');

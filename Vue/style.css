@@ -14,32 +14,77 @@
   position: relative;
   margin-right: 1vmin;
 }
-.carrousel__item img {
+
+.car_item__img {
   position: relative;
   bottom: 0;
   object-fit: cover;
   object-position: center;
   width: auto;
 }
-.carrousel__item .img--big {
+.car_item__img--big {
   height: 90vh;
 }
-.carrousel__item .img--small {
+.car_item__img--small {
   height: 30vh;
 }
-.carrousel__item .img--medium {
+.car_item__img--medium {
   height: 60vh;
 }
-.carrousel__item article {
-  padding: 1vmin 1vmin 0 1vmin;
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  padding: 10vh;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.modal__close_btn {
   position: absolute;
-  height: 25%;
-  bottom: 4vmin;
+  top: 0;
+  right: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+  margin: 1vmin;
+  padding: 1vmin;
+}
+.modal__photo {
+  object-fit: cover;
+  object-position: center;
+  height: 80vh;
+  width: 55vw;
+}
+.modal__content {
+  width: 100%;
+  height: 100%;
+  padding: 10vmin;
   background-color: rgba(255, 255, 255, 0.8);
   overflow-x: scroll;
+  display: flex;
+  flex-direction: column;
 }
-.carrousel__item h3 {
+.modal__content > h3 {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.5vmin;
+  font-size: 7vmin;
+  margin: 0;
+}
+.modal__content > button {
+  padding: 2vmin 5vmin 2vmin 5vmin;
+  text-transform: uppercase;
+  color: #0f0000;
+  background-color: #b60202;
+  align-self: center;
+  border: none;
+  margin: 2vmin;
+  box-shadow: 2px 2px 1px;
+  border-radius: 5px;
 }

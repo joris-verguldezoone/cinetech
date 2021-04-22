@@ -12,36 +12,82 @@
     &__item{
         position: relative;
         margin-right: 1vmin;
-        & img {
-            position: relative;
-            bottom: 0;
-            object-fit: cover;
-            object-position: center;     
-            width: auto;
-        }
-        & .img--big{
-            height: 90vh;
-        }
-        & .img--small{
-            height: 30vh;
-        }
-        & .img--medium{
-            height: 60vh;
-        }
-        & article {
-            padding: 1vmin 1vmin 0 1vmin;
-            position: absolute;
-            height: 25%;
-            bottom: 4vmin;
-            background-color: rgba($color: #ffffff, $alpha: 0.8);
-            overflow-x: scroll;
-        }
-        & h3 {
+    }
+}
+
+.car_item{
+    &__img {
+        position: relative;
+        bottom: 0;
+        object-fit: cover;
+        object-position: center;     
+        width: auto;
+    }
+    &__img--big{
+        height: 90vh;
+    }
+    &__img--small{
+        height: 30vh;
+    }
+    &__img--medium{
+        height: 60vh;
+    }
+}
+
+.modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 10vh;
+    z-index: 10;
+    background-color: rgba($color: #000000, $alpha: 0.8);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    &__close_btn{
+        position: absolute;
+        top: 0;
+        right: 0;
+        border: none;
+        border-radius: 50%;
+        background-color: rgba($color: #ffffff, $alpha: 0.8);
+        margin: 1vmin;
+        padding: 1vmin;
+    }
+    &__photo{
+        object-fit: cover;
+        object-position: center;
+        height: 80vh;
+        width: 55vw;
+    }
+    &__content{
+        width: 100%;
+        height: 100%;
+        padding: 10vmin;
+        background-color: rgba($color: #ffffff, $alpha: 0.8);
+        overflow-x: scroll;
+        display: flex;
+        flex-direction: column;
+        & > h3 {
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 0.5vmin;
+            font-size: 7vmin;
+            margin: 0;
         }
-        
-        
+        & > button {
+            padding: 2vmin 5vmin 2vmin 5vmin;
+            text-transform: uppercase;
+            color: rgba($color: #0f0000, $alpha: 1);
+            background-color: rgba($color: #b60202, $alpha: 1);
+            align-self: center;
+            border: none;
+            margin: 2vmin;
+            box-shadow: 2px 2px 1px;
+            border-radius: 5px;
+        }
     }
+
 }
