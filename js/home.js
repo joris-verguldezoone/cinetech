@@ -8,7 +8,7 @@ const api = {
 const app = Vue.createApp({
     methods: {
         changePage: function (obj) {
-            let url = '' + obj.page + '.php' + '?id=' + obj.id
+            let url = obj.page + '/' + obj.id
             window.location.assign(url)
         }
     }

@@ -32,4 +32,9 @@ $app->get('/movie/{id}', function (Request $request, Response $response, $args) 
     return $response;
 });
 
+$app->get('/tv/{id}', function (Request $request, Response $response, $args) {
+    $response->getBody()->write("want to see tv {$args['id']}");
+    return $response;
+});
+
 $app->run();

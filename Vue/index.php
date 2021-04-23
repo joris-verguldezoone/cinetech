@@ -8,15 +8,10 @@
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/vue@next"></script>
-    <script src="index.js" type="text/javascript" async></script>
 </head>
 
 <body>
-    <div id="app">
-        <carrousel-custom @change-page="changePage($event)" size="small" request="/discover/movie" filter="&sort_by=popularity.desc"></carrousel-custom>
-        <carrousel-custom @change-page="changePage($event)" size="medium" request="/discover/movie" filter="&sort_by=release_date.asc"></carrousel-custom>
-        <carrousel-custom @change-page="changePage($event)" size="big" request="/discover/tv" filter="&sort_by=popularity.desc"></carrousel-custom>
-    </div>
+
 </body>
 
 </html>
