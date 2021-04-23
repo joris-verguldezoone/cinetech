@@ -81,13 +81,17 @@
             padding: 2vmin 5vmin 2vmin 5vmin;
             text-transform: uppercase;
             color: rgba($color: #0f0000, $alpha: 1);
-            background-color: rgba($color: #b60202, $alpha: 1);
+            background-color: rgba($color: #e75151, $alpha: 1);
+            transition: background-color 0.25s ease-in;
             align-self: center;
             border: none;
             margin: 2vmin;
             box-shadow: 2px 2px 1px;
             border-radius: 5px;
         }
+        & > button:hover {
+            background-color: rgba($color: #b60202, $alpha: 1);
+            transition: background-color 0.35s ease-out;        }
     }
 
 }

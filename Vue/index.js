@@ -5,19 +5,16 @@ const api = {
     key: '?api_key=8f560fa0d81bece7dce9718dd0d51a08'
 }
 
-
 const app = Vue.createApp({
     methods: {
         changePage: function (obj) {
-            console.log(obj)
+            let url = '' + obj.page + '.php' + '?id=' + obj.id
+            window.location.assign(url)
         }
-    },
-    mounted() {
-        this.changePage('testmount')
     }
 })
 
-app.component('carrousel', {
+app.component('carrousel-custom', {
     data() {
         return {
             results: {}
@@ -66,11 +63,11 @@ app.component('carrousel-item', {
     template:
         `<div >
             <img @click="toggleVisibility" class="car_item__img" :class="classSizeModifObj" v-bind:src="picLowQual + result.poster_path" >
-            <modal @closeModal="toggleVisibility" @change-page="$emit('changePage',$event)" v-if="show" :result="result"></modal>
+            <modal-custom @closeModal="toggleVisibility" @change-page="$emit('changePage',$event)" v-if="show" :result="result"></modal-custom>
         </div>`
 })
 
-app.component('modal', {
+app.component('modal-custom', {
     data() {
         return {
             picHighQual: api.picHighQual,
@@ -101,7 +98,7 @@ app.component('modal', {
                 <h3>{{ result.title }}</h3>
                 <p>Overview : {{ result.overview }}</p>
                 <p>Vote : {{ result.vote_average }}</p>
-                <button @click="$emit('changePage', { type : type, id : id })">More information</button>
+                <button @click="$emit('changePage', { page : type, id : id })">More information</button>
             </div>
         </div>`
 })
