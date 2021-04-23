@@ -4,7 +4,7 @@ use App\controller\HomeController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-
+use App\controller\InscriptionController;
 require __DIR__ . '/vendor/autoload.php';
 
 spl_autoload_register(function ($className) {
@@ -16,6 +16,21 @@ spl_autoload_register(function ($className) {
 });
 
 $app = AppFactory::create();
+?>
+
+
+<?php
+
+
+
+
+if(isset($_POST['submitInscription'])){
+
+    $inscriptionController = new InscriptionController();
+    $inscriptionController->inscription($_POST['createLogin'],$_POST['createEmail'], $_POST['createPassword'], $_POST['confirmCreatePassword'], );
+}
+
+
 
 // Adapt rooter to sub directory
 define('BASE_PATH', rtrim(dirname($_SERVER["SCRIPT_NAME"]), '/'));
