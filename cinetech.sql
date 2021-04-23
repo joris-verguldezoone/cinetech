@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 4.9.2
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : mar. 20 avr. 2021 à 17:21
--- Version du serveur :  5.7.31
--- Version de PHP : 7.3.21
+-- Généré le :  ven. 23 avr. 2021 à 08:32
+-- Version du serveur :  10.4.10-MariaDB
+-- Version de PHP :  7.3.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -18,21 +19,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `cinetech`
+-- Base de données :  `cinetech`
 --
-
--- --------------------------------------------------------
-
---
--- Structure de la table `droits`
---
-
-DROP TABLE IF EXISTS `droits`;
-CREATE TABLE IF NOT EXISTS `droits` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `droit` varchar(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -86,6 +74,19 @@ CREATE TABLE IF NOT EXISTS `movie_commentary_reply` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `rights`
+--
+
+DROP TABLE IF EXISTS `rights`;
+CREATE TABLE IF NOT EXISTS `rights` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `rights` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `series_commentary`
 --
 
@@ -118,13 +119,13 @@ CREATE TABLE IF NOT EXISTS `series_commentary_reply` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `utilisateurs`
+-- Structure de la table `user`
 --
 
-DROP TABLE IF EXISTS `utilisateurs`;
-CREATE TABLE IF NOT EXISTS `utilisateurs` (
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_droit` int(11) NOT NULL,
+  `id_right` int(11) NOT NULL,
   `login` varchar(20) NOT NULL,
   `password` varchar(50) NOT NULL,
   `image` varchar(800) NOT NULL,
