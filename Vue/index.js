@@ -5,15 +5,12 @@ const api = {
     key : '?api_key=8f560fa0d81bece7dce9718dd0d51a08'
 }
 
-
 const app = Vue.createApp({
     methods: {
         changePage : function(obj){
-            console.log(obj)
+            let url = '' + obj.page + '.php' + '?id=' + obj.id
+            window.location.assign(url)
         }
-    },
-    mounted(){
-        this.changePage('testmount')
     }
 })
 
@@ -101,7 +98,7 @@ app.component('modal-custom',{
                 <h3>{{ result.title }}</h3>
                 <p>Overview : {{ result.overview }}</p>
                 <p>Vote : {{ result.vote_average }}</p>
-                <button @click="$emit('changePage', { type : type, id : id })">More information</button>
+                <button @click="$emit('changePage', { page : type, id : id })">More information</button>
             </div>
         </div>`
 })

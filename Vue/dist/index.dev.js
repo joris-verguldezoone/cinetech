@@ -9,11 +9,9 @@ var api = {
 var app = Vue.createApp({
   methods: {
     changePage: function changePage(obj) {
-      console.log(obj);
+      var url = '' + obj.page + '.php' + '?id=' + obj.id;
+      window.location.assign(url);
     }
-  },
-  mounted: function mounted() {
-    this.changePage('testmount');
   }
 });
 app.component('carrousel-custom', {
@@ -87,6 +85,6 @@ app.component('modal-custom', {
   mounted: function mounted() {
     this.titleHandeling();
   },
-  template: "<div class=\"modal\">\n            <button @click=\"$emit('closeModal')\" class=\"modal__close_btn\">X</button>\n            <img class=\"modal__photo\" v-bind:src=\"picHighQual + img_path\" >\n            <div class=\"modal__content\">\n                <h3>{{ result.title }}</h3>\n                <p>Overview : {{ result.overview }}</p>\n                <p>Vote : {{ result.vote_average }}</p>\n                <button @click=\"$emit('changePage', { type : type, id : id })\">More information</button>\n            </div>\n        </div>"
+  template: "<div class=\"modal\">\n            <button @click=\"$emit('closeModal')\" class=\"modal__close_btn\">X</button>\n            <img class=\"modal__photo\" v-bind:src=\"picHighQual + img_path\" >\n            <div class=\"modal__content\">\n                <h3>{{ result.title }}</h3>\n                <p>Overview : {{ result.overview }}</p>\n                <p>Vote : {{ result.vote_average }}</p>\n                <button @click=\"$emit('changePage', { page : type, id : id })\">More information</button>\n            </div>\n        </div>"
 });
 var vm = app.mount('#app');
