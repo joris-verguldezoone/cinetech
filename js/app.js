@@ -1,13 +1,11 @@
-
 const app = Vue.createApp({
-    
     data(){
         return{
             type:'',
             id:0,
             credits:{},
             reviews:{},
-            info:{}
+            overview:{}
         }
     },
     computed: {
@@ -19,7 +17,10 @@ const app = Vue.createApp({
         id: function () { 
             this.get('credits')
             this.get('reviews')
-            this.get('info')
+            this.get('overview')
+        },
+        overview : function(){
+            this.overview.title = typeof this.overview.title !== 'undefined' ? this.overview.title : this.overview.name
         }
     },
     methods : {
@@ -35,7 +36,7 @@ const app = Vue.createApp({
         },
         get: function (info) {
             let urlRequest = api.base +'/'+this.type+'/'+ this.id+ '/' + info +api.key
-            urlRequest = (info == 'info') ? api.base +'/'+this.type+'/'+ this.id +api.key : urlRequest
+            urlRequest = (info == 'overview') ? api.base +'/'+this.type+'/'+ this.id +api.key : urlRequest
             this.getRequestApi(urlRequest,info)
         },
         getRequestApi: function(urlRequest,store){
@@ -49,7 +50,7 @@ const app = Vue.createApp({
     }
 })
 
-app.component('prg-info',{
+app.component('prg-overview',{
     data() {
         return {
             picHighQual: api.picHighQual,
@@ -64,10 +65,39 @@ app.component('prg-info',{
     template:
         `<div class="prg_info">
                 <img class="prg_info__img" v-bind:src="picHighQual + img_path" >
-                <h3 class="prg_info__title">{{ info.title }}</h3>
-                <p class="prg_info__overview">Overview : {{ info.overview }}</p>
-                <p class="prg_info__note">Vote : {{ info.vote_average }}</p>
+                <div class="prg_info__content">
+                    <h3 class="prg_info__title">{{ info.title }}</h3>  
+                    <p class="prg_info__overview">{{ info.overview }}</p>
+                </div>
+                <p class="prg_info__note"> {{ info.vote_average }} / 10</p>
         </div>`
+})
+
+app.component('prg-review',{
+    props:['review'],
+    computed: {
+        imgAvatar(){
+            let nonePicPath = 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp'
+            let picPath =  this.review.author_details.avatar_path === null ? nonePicPath : this.review.author_details.avatar_path.substring(1)
+            return picPath.match(/^http/gmi) ? picPath : api.picLowQual + picPath       
+        }
+    },
+    template: 
+    `<details class="prg-review">
+        <summary class="prg-review__summary">{{review.author}} <span class="prg-review__note">({{review.author_details.rating}}/10)</span></summary>
+        <img class="prg-review__avatar" v-bind:src="imgAvatar">
+        <p class="prg-review__content"> {{review.content}}</p>
+        <div class="prg-review__clear"></div>
+    </details>`
+})
+
+app.component('prg-casting', {
+    props: ['actor'],
+    template: 
+    `<div class="prg-actor">
+        <img class="prg-actor__img" v-bind:src="\'https://image.tmdb.org/t/p/w500//\'+ actor.profile_path">
+        <p class="prg-actor__name">{{actor.name}} as {{actor.character}}</p>
+    </div>`
 })
 
 app.component('carrousel-custom', {

@@ -102,24 +102,93 @@
 
 .prg_info {
   position: relative;
+  margin: 0 auto;
+  /* Center it */
 }
 .prg_info__img {
   object-fit: cover;
   object-position: center;
-  height: 50vh;
+  height: 70vh;
   width: 100%;
+}
+.prg_info__content {
+  position: absolute;
+  /* Position the background text */
+  bottom: 0;
+  /* At the bottom. Use top:0 to append it to the top */
+  background: rgba(0, 0, 0, 0.7);
+  /* Black background with 0.7 opacity */
+  color: #f1f1f1;
+  /* Grey text */
+  width: 100%;
+  /* Full width */
+  padding: 4vmin;
+  /* Some padding */
 }
 .prg_info__title {
-  background-color: rgba(0, 0, 0, 0.8);
-  width: 100%;
-  position: absolute;
   font-size: 10vmin;
-  bottom: 50%;
-  transform: translateY(50%);
+  width: 100%;
   text-transform: uppercase;
-  color: white;
 }
-.prg_info__overview {
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
+.prg_info__note {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  color: red;
+  text-shadow: 1px 1px 3px black;
+  font-size: 5vmin;
+}
+
+.prg-reviews {
+  padding-left: 4vmin;
+}
+
+.prg-review__summary {
+  font-size: 2vmin;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+}
+.prg-review__note {
+  color: red;
+}
+.prg-review__avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  float: left;
+  margin: 15px;
+}
+.prg-review__clear {
+  clear: left;
+}
+
+.prg-casting {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.prg-actor {
+  position: relative;
+}
+.prg-actor__img {
+  height: 30vh;
+  object-fit: cover;
+}
+.prg-actor__name {
+  position: absolute;
+  bottom: 0;
+  /* At the bottom. Use top:0 to append it to the top */
+  background: rgba(0, 0, 0, 0.7);
+  /* Black background with 0.5 opacity */
+  color: #f1f1f1;
+  /* Grey text */
+  width: 100%;
+  /* Full width */
+  padding: 1vmin;
+  /* Some padding */
+}
+
+summary {
+  font-size: 5vmin;
 }

@@ -7,7 +7,7 @@ var app = Vue.createApp({
       id: 0,
       credits: {},
       reviews: {},
-      info: {}
+      overview: {}
     };
   },
   computed: {
@@ -19,7 +19,10 @@ var app = Vue.createApp({
     id: function id() {
       this.get('credits');
       this.get('reviews');
-      this.get('info');
+      this.get('overview');
+    },
+    overview: function overview() {
+      this.overview.title = typeof this.overview.title !== 'undefined' ? this.overview.title : this.overview.name;
     }
   },
   methods: {
@@ -35,7 +38,7 @@ var app = Vue.createApp({
     },
     get: function get(info) {
       var urlRequest = api.base + '/' + this.type + '/' + this.id + '/' + info + api.key;
-      urlRequest = info == 'info' ? api.base + '/' + this.type + '/' + this.id + api.key : urlRequest;
+      urlRequest = info == 'overview' ? api.base + '/' + this.type + '/' + this.id + api.key : urlRequest;
       this.getRequestApi(urlRequest, info);
     },
     getRequestApi: function getRequestApi(urlRequest, store) {
@@ -52,7 +55,7 @@ var app = Vue.createApp({
     this.getPrgInfo();
   }
 });
-app.component('prg-info', {
+app.component('prg-overview', {
   data: function data() {
     return {
       picHighQual: api.picHighQual
@@ -64,7 +67,22 @@ app.component('prg-info', {
     }
   },
   props: ["info"],
-  template: "<div class=\"prg_info\">\n                <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                <h3 class=\"prg_info__title\">{{ info.title }}</h3>\n                <p class=\"prg_info__overview\">Overview : {{ info.overview }}</p>\n                <p class=\"prg_info__note\">Vote : {{ info.vote_average }}</p>\n        </div>"
+  template: "<div class=\"prg_info\">\n                <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                <div class=\"prg_info__content\">\n                    <h3 class=\"prg_info__title\">{{ info.title }}</h3>  \n                    <p class=\"prg_info__overview\">{{ info.overview }}</p>\n                </div>\n                <p class=\"prg_info__note\"> {{ info.vote_average }} / 10</p>\n        </div>"
+});
+app.component('prg-review', {
+  props: ['review'],
+  computed: {
+    imgAvatar: function imgAvatar() {
+      var nonePicPath = 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp';
+      var picPath = this.review.author_details.avatar_path === null ? nonePicPath : this.review.author_details.avatar_path.substring(1);
+      return picPath.match(/^http/gmi) ? picPath : api.picLowQual + picPath;
+    }
+  },
+  template: "<details class=\"prg-review\">\n        <summary class=\"prg-review__summary\">{{review.author}} <span class=\"prg-review__note\">({{review.author_details.rating}}/10)</span></summary>\n        <img class=\"prg-review__avatar\" v-bind:src=\"imgAvatar\">\n        <p class=\"prg-review__content\"> {{review.content}}</p>\n        <div class=\"prg-review__clear\"></div>\n    </details>"
+});
+app.component('prg-casting', {
+  props: ['actor'],
+  template: "<div class=\"prg-actor\">\n        <img class=\"prg-actor__img\" v-bind:src=\"'https://image.tmdb.org/t/p/w500//'+ actor.profile_path\">\n        <p class=\"prg-actor__name\">{{actor.name}} as {{actor.character}}</p>\n    </div>"
 });
 app.component('carrousel-custom', {
   data: function data() {
