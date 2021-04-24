@@ -1,18 +1,70 @@
 "use strict";
 
-var api = {
-  base: 'https://api.themoviedb.org/3',
-  picLowQual: 'https://image.tmdb.org/t/p/w500//',
-  picHighQual: 'https://image.tmdb.org/t/p/original/',
-  key: '?api_key=8f560fa0d81bece7dce9718dd0d51a08'
-};
 var app = Vue.createApp({
+  data: function data() {
+    return {
+      type: '',
+      id: 0,
+      credits: {},
+      reviews: {},
+      info: {}
+    };
+  },
+  computed: {
+    basePath: function basePath() {
+      return document.querySelector('#conf>input[name=base_path]').getAttribute('value');
+    }
+  },
+  watch: {
+    id: function id() {
+      this.get('credits');
+      this.get('reviews');
+      this.get('info');
+    }
+  },
   methods: {
     changePage: function changePage(obj) {
-      var url = obj.page + '/' + obj.id;
+      var url = this.basePath + '/' + obj.page + '/' + obj.id;
       window.location.assign(url);
+    },
+    getPrgInfo: function getPrgInfo() {
+      if (document.querySelector('#prg-info > input[name=type]') !== null) {
+        this.type = document.querySelector('#prg-info > input[name=type]').getAttribute('value');
+        this.id = document.querySelector('#prg-info > input[name=id]').getAttribute('value');
+      }
+    },
+    get: function get(info) {
+      var urlRequest = api.base + '/' + this.type + '/' + this.id + '/' + info + api.key;
+      urlRequest = info == 'info' ? api.base + '/' + this.type + '/' + this.id + api.key : urlRequest;
+      this.getRequestApi(urlRequest, info);
+    },
+    getRequestApi: function getRequestApi(urlRequest, store) {
+      var _this = this;
+
+      fetch(urlRequest).then(function (response) {
+        return response.json();
+      }).then(function (json) {
+        return _this[store] = json;
+      });
     }
+  },
+  mounted: function mounted() {
+    this.getPrgInfo();
   }
+});
+app.component('prg-info', {
+  data: function data() {
+    return {
+      picHighQual: api.picHighQual
+    };
+  },
+  computed: {
+    img_path: function img_path() {
+      return this.info.backdrop_path != null ? this.info.backdrop_path : this.info.poster_path;
+    }
+  },
+  props: ["info"],
+  template: "<div class=\"prg_info\">\n                <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                <h3 class=\"prg_info__title\">{{ info.title }}</h3>\n                <p class=\"prg_info__overview\">Overview : {{ info.overview }}</p>\n                <p class=\"prg_info__note\">Vote : {{ info.vote_average }}</p>\n        </div>"
 });
 app.component('carrousel-custom', {
   data: function data() {
@@ -23,13 +75,13 @@ app.component('carrousel-custom', {
   props: ['size', 'request', 'filter'],
   methods: {
     getData: function getData() {
-      var _this = this;
+      var _this2 = this;
 
       var url = api.base + this.request + api.key + this.filter;
       fetch(url).then(function (response) {
         return response.json();
       }).then(function (json) {
-        return _this.results = json.results;
+        return _this2.results = json.results;
       });
     }
   },
@@ -87,4 +139,4 @@ app.component('modal-custom', {
   },
   template: "<div class=\"modal\">\n            <button @click=\"$emit('closeModal')\" class=\"modal__close_btn\">X</button>\n            <img class=\"modal__photo\" v-bind:src=\"picHighQual + img_path\" >\n            <div class=\"modal__content\">\n                <h3>{{ result.title }}</h3>\n                <p>Overview : {{ result.overview }}</p>\n                <p>Vote : {{ result.vote_average }}</p>\n                <button @click=\"$emit('changePage', { page : type, id : id })\">More information</button>\n            </div>\n        </div>"
 });
-var vm = app.mount('#app-home');
+var vm = app.mount('#app');

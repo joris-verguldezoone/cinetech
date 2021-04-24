@@ -1,6 +1,8 @@
 <?php
 
 use App\controller\HomeController;
+use App\controller\TvController;
+use App\controller\MovieController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -27,14 +29,8 @@ $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 $app->get('/', HomeController::class . ':main');
 
-$app->get('/movie/{id}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("want to see movie {$args['id']}");
-    return $response;
-});
+$app->get('/movie/{id}', MovieController::class . ':show');
 
-$app->get('/tv/{id}', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("want to see tv {$args['id']}");
-    return $response;
-});
+$app->get('/tv/{id}', TvController::class . ':show');
 
 $app->run();

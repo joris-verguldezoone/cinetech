@@ -10,7 +10,7 @@ class HomeController extends Controller
     public function main(Request $request, Response $response, $args)
     {
         $this->preloadTwig();
-        $response->getBody()->write($this->twig->render('home.twig.php', ["name" => "Joris"]));
+        $response->getBody()->write($this->twig->render('home.twig.php', ["BASE_PATH" => BASE_PATH]));
         return $response;
     }
 }

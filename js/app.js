@@ -1,17 +1,73 @@
-const api = {
-    base: 'https://api.themoviedb.org/3',
-    picLowQual: 'https://image.tmdb.org/t/p/w500//',
-    picHighQual: 'https://image.tmdb.org/t/p/original/',
-    key: '?api_key=8f560fa0d81bece7dce9718dd0d51a08'
-}
 
 const app = Vue.createApp({
-    methods: {
-        changePage: function (obj) {
-            let url = obj.page + '/' + obj.id
-            window.location.assign(url)
+    
+    data(){
+        return{
+            type:'',
+            id:0,
+            credits:{},
+            reviews:{},
+            info:{}
         }
+    },
+    computed: {
+        basePath(){
+            return document.querySelector('#conf>input[name=base_path]').getAttribute('value')
+        }
+    },
+    watch: {
+        id: function () { 
+            this.get('credits')
+            this.get('reviews')
+            this.get('info')
+        }
+    },
+    methods : {
+        changePage: function (obj) {
+            let url = this.basePath +'/' +obj.page + '/' + obj.id
+            window.location.assign(url)
+        },
+        getPrgInfo: function(){
+            if(document.querySelector('#prg-info > input[name=type]') !== null){
+                this.type= document.querySelector('#prg-info > input[name=type]').getAttribute('value')
+                this.id= document.querySelector('#prg-info > input[name=id]').getAttribute('value')
+            }
+        },
+        get: function (info) {
+            let urlRequest = api.base +'/'+this.type+'/'+ this.id+ '/' + info +api.key
+            urlRequest = (info == 'info') ? api.base +'/'+this.type+'/'+ this.id +api.key : urlRequest
+            this.getRequestApi(urlRequest,info)
+        },
+        getRequestApi: function(urlRequest,store){
+            fetch(urlRequest)
+                .then(response => response.json())
+                .then(json => this[store] = json)
+        }
+    },
+    mounted(){
+        this.getPrgInfo()
     }
+})
+
+app.component('prg-info',{
+    data() {
+        return {
+            picHighQual: api.picHighQual,
+        }
+    },
+    computed: {
+        img_path() {
+            return (this.info.backdrop_path != null) ? this.info.backdrop_path : this.info.poster_path
+        }
+    },
+    props : ["info"],
+    template:
+        `<div class="prg_info">
+                <img class="prg_info__img" v-bind:src="picHighQual + img_path" >
+                <h3 class="prg_info__title">{{ info.title }}</h3>
+                <p class="prg_info__overview">Overview : {{ info.overview }}</p>
+                <p class="prg_info__note">Vote : {{ info.vote_average }}</p>
+        </div>`
 })
 
 app.component('carrousel-custom', {
