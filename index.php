@@ -27,7 +27,7 @@ $app = AppFactory::create();
 if(isset($_POST['submitInscription'])){
 
     $inscriptionController = new InscriptionController();
-    $inscriptionController->inscription($_POST['createLogin'],$_POST['createEmail'], $_POST['createPassword'], $_POST['confirmCreatePassword'], );
+    $inscriptionController->inscription($_POST['createLogin'],$_POST['createEmail'], $_POST['createPassword'], $_POST['confirmCreatePassword']);
 }
 
 
@@ -46,5 +46,7 @@ $app->get('/movie/{id}', function (Request $request, Response $response, $args) 
     $response->getBody()->write("want to see movie {$args['id']}");
     return $response;
 });
+
+$app->get('/inscription', HomeController::class . ':inscription')->setName('inscription');
 
 $app->run();

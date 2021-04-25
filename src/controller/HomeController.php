@@ -13,5 +13,11 @@ class HomeController extends Controller
         $response->getBody()->write($this->twig->render('home.twig.php', ["name" => "Joris"]));
         return $response;
     }
+    public function inscription(Request $request, Response $response, $args)
+    {
+        $this->preloadTwig();
+        $response->getBody()->write($this->twig->render('inscription.twig.php'));
+        return $response;
+    }
 }
  

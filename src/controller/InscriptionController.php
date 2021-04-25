@@ -11,18 +11,7 @@ class InscriptionController extends Controller
     public $email;
     public $password;
     public $confirm_password;
-    public function inscription($login, $email, $password,$confirm_password)
-    {
-        // public function main(Request $request, Response $response, $args)
-        // {
-            // $this->preloadTwig();
-            // $response->getBody()->write($this->twig->render('home.twig.php', ["name" => "Joris"]));
-            // return $response;
-               
-    }
-}
 
-class HomeController extends Controller
-{
-    
+
+
 }
