@@ -21,8 +21,12 @@
         <input type="hidden" name="base_path" value={{BASE_PATH}}>
     </form>
     {% include 'header.twig.php' %}
-    {% block content %}
-    {% endblock %}
+
+    <div id="app">
+        {% block content %}
+        <search-modul keywords="{{keywords}}" @change-page="changePage($event)"></search-modul>
+        {% endblock %}
+    </div>
 
     {% block script %}
     <script src="{{BASE_PATH}}/js/app.js" type="text/javascript" async></script>

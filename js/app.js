@@ -25,8 +25,10 @@ const app = Vue.createApp({
     },
     methods : {
         changePage: function (obj) {
-            let url = this.basePath +'/' +obj.page + '/' + obj.id
-            window.location.assign(url)
+            
+            let param = typeof obj.id === 'undefined' ? obj.keyword : obj.id 
+            let url = this.basePath +'/' +obj.page + '/' + param
+            window.location.assign(encodeURI(url))
         },
         getPrgInfo: function(){
             if(document.querySelector('#prg-info > input[name=type]') !== null){
@@ -49,6 +51,80 @@ const app = Vue.createApp({
         this.getPrgInfo()
     }
 })
+
+app.component('search-modul',{
+    data(){
+        return {
+            query:'',
+            dataList : {},
+            results : {}
+        }
+    },
+    props:['keywords'],
+    computed:{
+        showResults() {
+            return this.keywords.length > 0 ? true : false
+        }
+    },
+    watch:{
+        query : function(){
+            this.getDataList()
+        }
+    },
+    methods:{
+        getDataList : function(){
+            let urlRequest = api.base +'/'+'search/multi' +api.key +'&query='+this.query
+            this.getRequestApi(urlRequest,'dataList')
+        },
+        getResults : function(){
+            let urlRequest = api.base +'/'+'search/multi' +api.key +'&query='+this.keywords
+            this.getRequestApi(urlRequest,'results')
+        },
+        getRequestApi: function(urlRequest,store){
+            fetch(urlRequest)
+                .then(response => response.json())
+                .then(json => this[store] = json)
+        },
+        title : function(data){
+            switch (data.media_type) {
+                case 'movie':
+                    return data.title
+                    break;
+                case 'tv':
+                    return data.name
+                    break;    
+                default:
+                    break;
+            }
+        }
+    },
+    mounted(){
+        if(this.showResults){
+          this.getResults()
+        }
+    },
+    template:
+    `<div>
+        <teleport to="#searchBarPlaceHolder">
+            <form @submit.prevent="$emit('changePage',{ page :'search', keyword:query})" class="d-flex">   
+                <input class="form-control me-2"  placeholder="Search" type="search" list="keywords" v-model="query" />
+                <datalist id="keywords">
+                    <option v-for="result in dataList.results" :value="title(result)" />
+                </datalist>
+                <button class="btn btn-outline-danger" type="submit">Search</button>
+            </form>
+        </teleport>
+        <div v-if="showResults">
+            <h2>Results for : {{keywords}}</h2>
+            <ul>
+                <li v-for="result in results.results">{{title(result)}}</li>
+            </ul>
+        </div>
+    </div>
+    `
+})
+
+
 
 app.component('prg-overview',{
     data() {
