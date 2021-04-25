@@ -13,6 +13,6 @@
     {% endblock %}
    
 </body>
-<script src='view/inscription.js' type='text/javascript'></script>
+<!-- <script src='view/inscription.js' type='text/javascript'></script> -->
 
 </html>

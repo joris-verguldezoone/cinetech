@@ -1,7 +1,7 @@
 {% extends "template.twig.php" %}
 
 {% block content %}
-<form method='POST' action="inscription">
+<form method='POST' action="{{ path_for('inscription') }}">
 
 <label for='login'>Login</label>
 <input type='text' name='createLogin' id='createLogin'> 
@@ -15,8 +15,17 @@
 <label for='password'>Confirmer le mot de passe</label>
 <input type='password' name='confirmCreatePassword' id='confirmCreatePassword'> 
 
-<input type='button' name='submitInscription' id='submitInscription' value="S'inscrire"> 
+<input type='submit' name='submitInscription' id='submitInscription' value="S'inscrire"> 
 
 </form>
+<?php
 
+if(isset($_POST['submitInscription'])){
+
+    $inscriptionController = new App\controller\InscriptionController();
+    $inscriptionController->inscription($_POST['createLogin'],$_POST['createEmail'], $_POST['createPassword'], $_POST['confirmCreatePassword']);
+    var_dump($_POST);
+}
+
+?>
 {% endblock %}

@@ -12,6 +12,11 @@ class InscriptionController extends Controller
     public $password;
     public $confirm_password;
 
+    public function inscription($login,$email,$password,$confirm_password){
+
+        $modelInscription = new \App\model\InscriptionModel();
+        $modelInscription->createAccount($login,$email,$password,$confirm_password);
+    }
 
 
 }
