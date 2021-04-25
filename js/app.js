@@ -95,7 +95,8 @@ app.component('prg-casting', {
     props: ['actor'],
     template: 
     `<div class="prg-actor">
-        <img class="prg-actor__img" v-bind:src="\'https://image.tmdb.org/t/p/w500//\'+ actor.profile_path">
+        <img v-if="actor.profile_path" class="prg-actor__img" v-bind:src="\'https://image.tmdb.org/t/p/w500//\'+ actor.profile_path">
+        <img v-else class="prg-actor__img" height="400" width="200" src="https://pukt.pl/wp-content/uploads/2019/12/YPS__human_avatar_portrait_photography_picture_photo-512-300x300.png">
         <p class="prg-actor__name">{{actor.name}} as {{actor.character}}</p>
     </div>`
 })

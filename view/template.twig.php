@@ -16,9 +16,11 @@
 </head>
 
 <body>
+
     <form id='conf'>
         <input type="hidden" name="base_path" value={{BASE_PATH}}>
     </form>
+    {% include 'header.twig.php' %}
     {% block content %}
     {% endblock %}
 
