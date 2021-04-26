@@ -6,7 +6,7 @@ protected $pdo;
     public function createAccount($login,$email,$password){
         $model = new InscriptionModel(); // to refactorise
 
-        $this->pdo = $model->connect();
+    
 
         DEFINE('DEFAULT_USER_IMG', 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp');
         $image = DEFAULT_USER_IMG;

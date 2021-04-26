@@ -1,31 +1,24 @@
 {% extends "template.twig.php" %}
 
 {% block content %}
-<form method='POST' action="{{ path_for('inscription') }}">
+<form method='POST' action="{{ BASE_PATH }}/inscription">
 
-<label for='login'>Login</label>
+<label for='createLogin'>Login</label>
 <input type='text' name='createLogin' id='createLogin'> 
+{{ method }}
 
-<label for='email'>Email</label>
+<label for='createEmail'>Email</label>
 <input type='email' name='createEmail' id='createEmail'> 
+{{ password }}
 
-<label for='password'>Mot de passe</label>
+<label for='createPassword'>Mot de passe</label>
 <input type='password' name='createPassword' id='createPassword'> 
+{{ confirm_password }}
 
-<label for='password'>Confirmer le mot de passe</label>
+<label for='confirmCreatePassword'>Confirmer le mot de passe</label>
 <input type='password' name='confirmCreatePassword' id='confirmCreatePassword'> 
 
 <input type='submit' name='submitInscription' id='submitInscription' value="S'inscrire"> 
 
 </form>
-<?php
-
-if(isset($_POST['submitInscription'])){
-
-    $inscriptionController = new App\controller\InscriptionController();
-    $inscriptionController->inscription($_POST['createLogin'],$_POST['createEmail'], $_POST['createPassword'], $_POST['confirmCreatePassword']);
-    var_dump($_POST);
-}
-
-?>
 {% endblock %}
