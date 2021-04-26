@@ -43,6 +43,6 @@ $app->get('/movie/{id}', function (Request $request, Response $response, $args) 
     return $response;
 });
 
-$app->get('/inscription', HomeController::class . ':getInscription')->setName('inscription');
+$app->get('/inscription', HomeController::class . ':getInscription');
 
 $app->run();
