@@ -57,14 +57,15 @@ app.component('search-modul',{
         return {
             query:'',
             dataList : {},
-            results : {}
+            results : {},
+            picLowQual: api.picLowQual
         }
     },
     props:['keywords'],
     computed:{
         showResults() {
             return this.keywords.length > 0 ? true : false
-        }
+        },
     },
     watch:{
         query : function(){
@@ -96,6 +97,9 @@ app.component('search-modul',{
                 default:
                     break;
             }
+        },
+        showResult(result) {
+            return (result.media_type === 'tv' || result.media_type === 'movie') && result.poster_path !== null ? true : false;
         }
     },
     mounted(){
@@ -114,11 +118,18 @@ app.component('search-modul',{
                 <button class="btn btn-outline-danger" type="submit">Search</button>
             </form>
         </teleport>
-        <div v-if="showResults">
+        <div v-if="showResults" >
             <h2>Results for : {{keywords}}</h2>
-            <ul>
-                <li v-for="result in results.results">{{title(result)}}</li>
-            </ul>
+            <div class="result" @click="$emit('changePage',{page:result.media_type , id:result.id})" v-for="result in results.results">
+                    <div v-if="showResult(result)">
+                    <img class="result__img" v-bind:src="picLowQual + result.poster_path">
+                    <div class="result__content">
+                        <h3>{{title(result)}} <span class="result__type">type: {{result.media_type }}</span></h3> 
+                        <p>{{result.overview}}</p>
+                    </div>
+                    <div class="result__clear"></div>
+                    </div>
+            </div>
         </div>
     </div>
     `

@@ -61,7 +61,8 @@ app.component('search-modul', {
     return {
       query: '',
       dataList: {},
-      results: {}
+      results: {},
+      picLowQual: api.picLowQual
     };
   },
   props: ['keywords'],
@@ -106,6 +107,9 @@ app.component('search-modul', {
         default:
           break;
       }
+    },
+    showResult: function showResult(result) {
+      return (result.media_type === 'tv' || result.media_type === 'movie') && result.poster_path !== null ? true : false;
     }
   },
   mounted: function mounted() {
@@ -113,7 +117,7 @@ app.component('search-modul', {
       this.getResults();
     }
   },
-  template: "<div>\n        <teleport to=\"#searchBarPlaceHolder\">\n            <form @submit.prevent=\"$emit('changePage',{ page :'search', keyword:query})\" class=\"d-flex\">   \n                <input class=\"form-control me-2\"  placeholder=\"Search\" type=\"search\" list=\"keywords\" v-model=\"query\" />\n                <datalist id=\"keywords\">\n                    <option v-for=\"result in dataList.results\" :value=\"title(result)\" />\n                </datalist>\n                <button class=\"btn btn-outline-danger\" type=\"submit\">Search</button>\n            </form>\n        </teleport>\n        <div v-if=\"showResults\">\n            <h2>Results for : {{keywords}}</h2>\n            <ul>\n                <li v-for=\"result in results.results\">{{title(result)}}</li>\n            </ul>\n        </div>\n    </div>\n    "
+  template: "<div>\n        <teleport to=\"#searchBarPlaceHolder\">\n            <form @submit.prevent=\"$emit('changePage',{ page :'search', keyword:query})\" class=\"d-flex\">   \n                <input class=\"form-control me-2\"  placeholder=\"Search\" type=\"search\" list=\"keywords\" v-model=\"query\" />\n                <datalist id=\"keywords\">\n                    <option v-for=\"result in dataList.results\" :value=\"title(result)\" />\n                </datalist>\n                <button class=\"btn btn-outline-danger\" type=\"submit\">Search</button>\n            </form>\n        </teleport>\n        <div v-if=\"showResults\" >\n            <h2>Results for : {{keywords}}</h2>\n            <div class=\"result\" @click=\"$emit('changePage',{page:result.media_type , id:result.id})\" v-for=\"result in results.results\">\n                    <div v-if=\"showResult(result)\">\n                    <img class=\"result__img\" v-bind:src=\"picLowQual + result.poster_path\">\n                    <div class=\"result__content\">\n                        <h3>{{title(result)}} <span class=\"result__type\">type: {{result.media_type }}</span></h3> \n                        <p>{{result.overview}}</p>\n                    </div>\n                    <div class=\"result__clear\"></div>\n                    </div>\n            </div>\n        </div>\n    </div>\n    "
 });
 app.component('prg-overview', {
   data: function data() {

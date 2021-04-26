@@ -184,3 +184,25 @@
 summary{
     font-size: 5vmin;
 }
+
+.result{
+    display: flex;
+    padding: 2vmin;
+    margin-bottom: 1vmin;
+    &__img{
+        object-fit: cover;
+        width: 15vmin;
+        height: 15vmin;
+        float: left;
+        margin: 1vmin;
+    }
+    &__content{
+        color:white;
+    }
+    &__clear{
+        clear:left;
+    }
+    &__type{
+        color:rosybrown;
+    }
+}
