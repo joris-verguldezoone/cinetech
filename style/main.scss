@@ -4,6 +4,11 @@
     -webkit-box-sizing: border-box;
 }
 
+#app{
+    background-color: black;
+    color:white;
+}
+
 .carrousel{
     display: flex;
     flex-direction: row;
@@ -67,6 +72,7 @@
         height: 100%;
         padding: 10vmin;
         background-color: rgba($color: #ffffff, $alpha: 0.8);
+        color: black;
         overflow-x: scroll;
         display: flex;
         flex-direction: column;
@@ -94,4 +100,87 @@
             transition: background-color 0.35s ease-out;        }
     }
 
+}
+
+
+
+.prg_info{
+    position: relative;
+    margin: 0 auto; /* Center it */
+    &__img {
+        object-fit: cover;
+        object-position: center;
+        height: 70vh;
+        width: 100%;
+    }
+    &__content{
+        position: absolute; /* Position the background text */
+        bottom: 0; /* At the bottom. Use top:0 to append it to the top */
+        background: rgba(0, 0, 0, 0.7); /* Black background with 0.7 opacity */
+        color: #f1f1f1; /* Grey text */
+        width: 100%; /* Full width */
+        padding: 4vmin; /* Some padding */
+    }
+    &__title {
+        font-size: 10vmin;
+        width: 100%;
+        text-transform: uppercase;
+        }
+    &__note{
+        position: absolute;
+        top: 8px;
+        right: 16px;
+        color: red;
+        text-shadow: 1px 1px 3px black;
+        font-size: 5vmin;
+    }
+    
+}
+.prg-reviews{
+    padding-left: 4vmin;
+}
+.prg-review{
+    &__summary{
+        font-size: 2vmin;
+        text-transform: uppercase;
+        color:rgba($color: #ffffff, $alpha: 0.8);
+    }
+    &__note{
+        color:red
+    }
+    &__avatar{
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        float: left;
+        margin: 15px;
+    }
+    &__clear{
+        clear:left;
+    }
+}
+.prg-casting{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.prg-actor{
+    position: relative;
+    &__img{
+        height: 30vh;
+        object-fit: cover;
+    }
+    &__name{
+        position: absolute;
+        bottom: 0; /* At the bottom. Use top:0 to append it to the top */
+        background: rgba(0, 0, 0, 0.7); /* Black background with 0.5 opacity */
+        color: #f1f1f1; /* Grey text */
+        width: 100%; /* Full width */
+        padding: 1vmin; /* Some padding */
+
+    }
+}
+
+summary{
+    font-size: 5vmin;
 }
