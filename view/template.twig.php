@@ -31,6 +31,8 @@
     {% block script %}
     <script src="{{BASE_PATH}}/js/app.js" type="text/javascript" async></script>
     {% endblock %}
+   
 </body>
+<!-- <script src='view/inscription.js' type='text/javascript'></script> -->
 
 </html>
