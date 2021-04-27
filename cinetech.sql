@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  ven. 23 avr. 2021 à 08:32
+-- Généré le :  mar. 27 avr. 2021 à 07:42
 -- Version du serveur :  10.4.10-MariaDB
 -- Version de PHP :  7.3.12
 
@@ -48,11 +48,20 @@ DROP TABLE IF EXISTS `movie_commentary`;
 CREATE TABLE IF NOT EXISTS `movie_commentary` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_user` int(11) NOT NULL,
-  `id_movie` int(11) NOT NULL,
+  `id_program` int(11) NOT NULL,
+  `type_program` varchar(50) NOT NULL,
   `commentary` varchar(1000) NOT NULL,
   `date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `movie_commentary`
+--
+
+INSERT INTO `movie_commentary` (`id`, `id_user`, `id_program`, `type_program`, `commentary`, `date`) VALUES
+(1, 1, 550, 'movie', 'Bjr la miff', '2018-09-24 00:00:00'),
+(2, 1, 550, 'movie', 'slt c cool', '2018-09-24 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -64,8 +73,9 @@ DROP TABLE IF EXISTS `movie_commentary_reply`;
 CREATE TABLE IF NOT EXISTS `movie_commentary_reply` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_user` int(11) NOT NULL,
-  `id_movie` int(11) NOT NULL,
   `id_commentary` int(11) NOT NULL,
+  `id_program` int(11) NOT NULL,
+  `type_program` varchar(50) NOT NULL,
   `reply` varchar(1000) NOT NULL,
   `date` datetime NOT NULL,
   PRIMARY KEY (`id`)
@@ -87,38 +97,6 @@ CREATE TABLE IF NOT EXISTS `rights` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `series_commentary`
---
-
-DROP TABLE IF EXISTS `series_commentary`;
-CREATE TABLE IF NOT EXISTS `series_commentary` (
-  `id` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `id_series` int(11) NOT NULL,
-  `commentary` varchar(1000) NOT NULL,
-  `date` datetime NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `series_commentary_reply`
---
-
-DROP TABLE IF EXISTS `series_commentary_reply`;
-CREATE TABLE IF NOT EXISTS `series_commentary_reply` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_user` int(11) NOT NULL,
-  `id_series` int(11) NOT NULL,
-  `id_commentary` int(11) NOT NULL,
-  `reply` varchar(1000) NOT NULL,
-  `date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Structure de la table `user`
 --
 
@@ -127,10 +105,23 @@ CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_right` int(11) NOT NULL,
   `login` varchar(20) NOT NULL,
-  `password` varchar(50) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `image` varchar(800) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `user`
+--
+
+INSERT INTO `user` (`id`, `id_right`, `login`, `email`, `password`, `image`) VALUES
+(1, 1, 'okokokokok', '$2y$10$27Gc0fbCEsyhRtsDTuFY0O/y6PUMwqfJ1m9wG53vWWJA7u9ZceCL6', 'okokokokok@ok.fr', 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp'),
+(2, 1, 'monviermtn', '$2y$10$H6.NUVpnhTYeCM/hRRNkK.rrB5sEppSUKrGZ6oHtBJAjQUTt5oP66', 'monviermtn@ok.fr', 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp'),
+(3, 1, 'jojojojoj', '$2y$10$bmCxWIhsu1mC1/.zBGAaJ.gJ5TojLMbZmcoygWEzaDxIEP8khYqxG', 'jojojojoj@ok.fr', 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp'),
+(4, 1, 'azertyuiop', '$2y$10$xufCi8EwEL73ONz02LK.5eshN4geR4d1orXaRKu1XlO5n6kxRz.ju', 'azertyuiop@ok.fr', 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp'),
+(5, 1, 'oooooook', '$2y$10$zqFLsGB9NjcVBInky7cmVuwWA4xew7lk/1y.R3JXQ4SpJurX9zCq6', 'oooooook@ok.fr', 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp'),
+(6, 1, 'jojox', 'jojox@ok.fr', '$2y$10$SE82p8ngrc8bYLVMy0Dia.Rwu9OGgO1gpfGPXWW8zIwBd3K4Jx8su', 'https://medias.publidata.io/production/images/images/000/021/103/cover_medium/fight_club_affiche.jpg?1498724104');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

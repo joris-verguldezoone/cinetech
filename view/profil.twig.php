@@ -19,7 +19,7 @@
     <label for='confirmProfilPassword'>Confirmer le mot de passe</label>
     <input type='password' name='confirmProfilPassword' id='profilPassword'> 
 
-    <input type='submit' name='submitProfil' id='submitProfil' value="S'inscrire"> 
+    <input type='submit' name='submitProfil' id='submitProfil' value="Modifier"> 
 
 </form>
 {% endblock %}
