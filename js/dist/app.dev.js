@@ -7,7 +7,11 @@ var app = Vue.createApp({
       id: 0,
       credits: {},
       reviews: {},
-      overview: {}
+      overview: {},
+      favMovies: false,
+      favTv: false,
+      apiSession: {},
+      fav: ''
     };
   },
   computed: {
@@ -20,6 +24,16 @@ var app = Vue.createApp({
       this.get('credits');
       this.get('reviews');
       this.get('overview');
+    },
+    favTv: function favTv() {
+      if (this.favMovies && this.favTv) {
+        this.fav = this.isFav();
+      }
+    },
+    favMovies: function favMovies() {
+      if (this.favMovies && this.favTv) {
+        this.fav = this.isFav();
+      }
     },
     overview: function overview() {
       this.overview.title = typeof this.overview.title !== 'undefined' ? this.overview.title : this.overview.name;
@@ -48,11 +62,11 @@ var app = Vue.createApp({
       fetch(urlRequest).then(function (response) {
         return response.json();
       }).then(function (json) {
-        return _this[store] = json;
+        _this[store] = json;
       });
     },
     apiConnect: function apiConnect() {
-      var urlRequest, token, form, response;
+      var urlRequest, token;
       return regeneratorRuntime.async(function apiConnect$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -76,110 +90,222 @@ var app = Vue.createApp({
 
             case 9:
               urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set';
-              form = new FormData();
-              form.append('token', token.request_token);
-              _context.next = 14;
-              return regeneratorRuntime.awrap(fetch(urlRequest, {
-                method: 'POST',
-                body: form
-              }).then(function (response) {
-                return response.json();
+              _context.next = 12;
+              return regeneratorRuntime.awrap(this.postFormData(urlRequest, {
+                "token": token.request_token
               }));
 
-            case 14:
-              response = _context.sent;
-              console.log(response);
+            case 12:
+              reponse = _context.sent;
+              console.log(reponse);
 
-            case 16:
+            case 14:
               urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
               window.location.assign(urlRequest);
 
-            case 18:
+            case 16:
             case "end":
               return _context.stop();
           }
         }
       }, null, this);
     },
-    apiSession: function apiSession() {
-      var urlRequest, token, session, form, response;
-      return regeneratorRuntime.async(function apiSession$(_context2) {
+    getSession: function getSession() {
+      var urlRequest, session, token;
+      return regeneratorRuntime.async(function getSession$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get';
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/get';
               _context2.next = 3;
               return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
                 return reponse.json();
               }));
 
             case 3:
+              session = _context2.sent;
+
+              if (!(session.session.api_session.length > 0)) {
+                _context2.next = 9;
+                break;
+              }
+
+              this.apiSession.session_id = session.session.api_session;
+              this.getFav();
+              console.log('Session already started', session);
+              return _context2.abrupt("return");
+
+            case 9:
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get';
+              _context2.next = 12;
+              return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
+                return reponse.json();
+              }));
+
+            case 12:
               token = _context2.sent;
 
-              if (!(!token.success || token.token === "")) {
-                _context2.next = 6;
+              if (!(!token.success || token.token === "" || token.token === "undefined")) {
+                _context2.next = 15;
                 break;
               }
 
               return _context2.abrupt("return", console.log('No token available', token));
 
-            case 6:
-              console.log(token);
+            case 15:
               urlRequest = 'https://api.themoviedb.org/3/authentication/session/new' + api.key + '&request_token=' + token.token;
-              _context2.next = 10;
+              _context2.next = 18;
               return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
                 return reponse.json();
               }));
 
-            case 10:
+            case 18:
               session = _context2.sent;
 
               if (session.success) {
-                _context2.next = 13;
+                _context2.next = 21;
                 break;
               }
 
               return _context2.abrupt("return", console.log('No session return by api', session));
 
-            case 13:
+            case 21:
               urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/set';
-              form = new FormData();
-              form.append('session', session.session_id);
-              _context2.next = 18;
-              return regeneratorRuntime.awrap(fetch(urlRequest, {
-                method: 'POST',
-                body: form
-              }).then(function (response) {
-                return response.json();
-              }));
-
-            case 18:
-              response = _context2.sent;
+              this.postFormData(urlRequest, {
+                'session': session.session_id
+              });
               urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set';
-              form = new FormData();
-              form.append('token', "");
-              _context2.next = 24;
-              return regeneratorRuntime.awrap(fetch(urlRequest, {
-                method: 'POST',
-                body: form
-              }).then(function (response) {
-                return response.json();
-              }));
+              reponse = this.postFormData(urlRequest, {
+                "token": token.token
+              });
+              this.getFav();
 
-            case 24:
-              response = _context2.sent;
-
-            case 25:
+            case 26:
             case "end":
               return _context2.stop();
           }
         }
       }, null, this);
+    },
+    postFormData: function postFormData(url, dataSet) {
+      var form, key, element, response;
+      return regeneratorRuntime.async(function postFormData$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              form = new FormData();
+
+              for (key in dataSet) {
+                if (dataSet.hasOwnProperty.call(dataSet, key)) {
+                  element = dataSet[key];
+                  form.append(key, element);
+                }
+              }
+
+              _context3.next = 4;
+              return regeneratorRuntime.awrap(fetch(url, {
+                method: 'POST',
+                body: form
+              }).then(function (response) {
+                return response.json();
+              }));
+
+            case 4:
+              response = _context3.sent;
+              return _context3.abrupt("return", response);
+
+            case 6:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      });
+    },
+    toggleFav: function toggleFav() {
+      console.log('toggle');
+      this.setFav(this.type, this.id, !this.isFav());
+    },
+    getFav: function getFav(type) {
+      var urlRequest;
+      return regeneratorRuntime.async(function getFav$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              if (!(typeof this.apiSession.session_id === 'undefined')) {
+                _context4.next = 2;
+                break;
+              }
+
+              return _context4.abrupt("return");
+
+            case 2:
+              urlRequest = api.base + '/account/%7Baccount_id%7D/favorite/movies' + api.key + '&session_id=' + this.apiSession.session_id + '&language=en-US&sort_by=created_at.asc&page=1';
+              this.getRequestApi(urlRequest, 'favMovies');
+              urlRequest = api.base + '/account/%7Baccount_id%7D/favorite/tv' + api.key + '&session_id=' + this.apiSession.session_id + '&language=en-US&sort_by=created_at.asc&page=1';
+              this.getRequestApi(urlRequest, 'favTv');
+
+            case 6:
+            case "end":
+              return _context4.stop();
+          }
+        }
+      }, null, this);
+    },
+    setFav: function setFav(type, id, state) {
+      var _this2 = this;
+
+      if (typeof this.apiSession.session_id === 'undefined') {
+        return;
+      }
+
+      var urlRequest = api.base + '/account/%7Baccount_id%7D/favorite' + api.key + '&session_id=' + this.apiSession.session_id;
+      var fav = {
+        "media_type": type,
+        "media_id": id,
+        "favorite": state
+      };
+      fetch(urlRequest, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(fav),
+        method: 'POST'
+      }).then(function (reponse) {
+        return reponse.json();
+      }).then(function (json) {
+        console.log(json);
+        _this2.favMovies = false;
+        _this2.favTv = false;
+
+        _this2.getFav();
+      });
+    },
+    isFav: function isFav() {
+      var _this3 = this;
+
+      var isFav = false;
+
+      if (this.type == 'movie') {
+        this.favMovies.results.forEach(function (fav) {
+          if (fav.id == _this3.id) {
+            isFav = true;
+          }
+        });
+      } else {
+        this.favTv.results.forEach(function (fav) {
+          if (fav.id == _this3.id) {
+            isFav = true;
+          }
+        });
+      }
+
+      return isFav;
     }
   },
   mounted: function mounted() {
     this.getPrgInfo();
-    this.apiSession();
+    this.getSession();
   }
 });
 app.component('api-connect', {
@@ -215,12 +341,12 @@ app.component('search-modul', {
       this.getRequestApi(urlRequest, 'results');
     },
     getRequestApi: function getRequestApi(urlRequest, store) {
-      var _this2 = this;
+      var _this4 = this;
 
       fetch(urlRequest).then(function (response) {
         return response.json();
       }).then(function (json) {
-        return _this2[store] = json;
+        return _this4[store] = json;
       });
     },
     title: function title(data) {
@@ -259,8 +385,8 @@ app.component('prg-overview', {
       return this.info.backdrop_path != null ? this.info.backdrop_path : this.info.poster_path;
     }
   },
-  props: ["info"],
-  template: "<div class=\"prg_info\">\n                <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                <div class=\"prg_info__content\">\n                    <h3 class=\"prg_info__title\">{{ info.title }}</h3>  \n                    <p class=\"prg_info__overview\">{{ info.overview }}</p>\n                </div>\n                <p class=\"prg_info__note\"> {{ info.vote_average }} / 10</p>\n        </div>"
+  props: ["info", "fav"],
+  template: "<div>\n            <div class=\"prg_info\">\n                    <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                    <div class=\"prg_info__content\">\n                        <h3 class=\"prg_info__title\">{{ info.title }}</h3>  \n                        <p class=\"prg_info__overview\">{{ info.overview }}</p>\n                    </div>\n                    <p class=\"prg_info__note\"> {{ info.vote_average }} / 10</p>\n                    \n            </div>\n            <button @click=\"$emit('toggleFav')\">\n                {{ fav ? \"is fav\" : \"not fav\"}}\n            </button>\n        </div>"
 });
 app.component('prg-review', {
   props: ['review'],
@@ -286,13 +412,13 @@ app.component('carrousel-custom', {
   props: ['size', 'request', 'filter'],
   methods: {
     getData: function getData() {
-      var _this3 = this;
+      var _this5 = this;
 
       var url = api.base + this.request + api.key + this.filter;
       fetch(url).then(function (response) {
         return response.json();
       }).then(function (json) {
-        return _this3.results = json.results;
+        return _this5.results = json.results;
       });
     }
   },

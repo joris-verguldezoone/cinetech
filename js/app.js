@@ -5,7 +5,11 @@ const app = Vue.createApp({
             id:0,
             credits:{},
             reviews:{},
-            overview:{}
+            overview:{},
+            favMovies:false,
+            favTv:false,
+            apiSession:{},
+            fav:''
         }
     },
     computed: {
@@ -17,7 +21,17 @@ const app = Vue.createApp({
         id: function () { 
             this.get('credits')
             this.get('reviews')
-            this.get('overview')
+            this.get('overview')  
+        },
+        favTv: function(){
+            if((this.favMovies && this.favTv)){
+                this.fav = this.isFav()
+            }
+        },
+        favMovies: function(){
+            if((this.favMovies && this.favTv)){
+                this.fav = this.isFav()
+            }
         },
         overview : function(){
             this.overview.title = typeof this.overview.title !== 'undefined' ? this.overview.title : this.overview.name
@@ -38,13 +52,15 @@ const app = Vue.createApp({
         },
         get: function (info) {
             let urlRequest = api.base +'/'+this.type+'/'+ this.id+ '/' + info +api.key
-            urlRequest = (info == 'overview') ? api.base +'/'+this.type+'/'+ this.id +api.key : urlRequest
+            urlRequest = (info == 'overview') ? api.base +'/'+ this.type+'/'+ this.id +api.key : urlRequest
             this.getRequestApi(urlRequest,info)
         },
         getRequestApi: function(urlRequest,store){
             fetch(urlRequest)
                 .then(response => response.json())
-                .then(json => this[store] = json)
+                .then(json => {
+                    this[store] = json
+                })
         },
         apiConnect: async function(){
             let urlRequest = api.base + '/authentication/token/new' + api.key
@@ -54,48 +70,116 @@ const app = Vue.createApp({
                 return
             } else {
                 urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set'
-                let form = new FormData()
-                form.append('token',token.request_token)
-                let response = await fetch(urlRequest,{
-                    method:'POST',
-                    body:form
-                }).then(response=>response.json())
-                console.log(response)
+                reponse = await this.postFormData(urlRequest,{"token":token.request_token})
+                console.log(reponse)
             }
             urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
             window.location.assign(urlRequest)
         },
-        apiSession: async function(){
-            let urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get'
+        getSession: async function(){
+            let urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/get'
+            let session = await fetch(urlRequest).then(reponse => reponse.json())
+            if(session.session.api_session.length > 0){
+                this.apiSession.session_id = session.session.api_session
+                this.getFav()
+                console.log('Session already started',session)
+                return
+            }
+            
+
+            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get'
             let token = await fetch(urlRequest).then(reponse => reponse.json())
-            if(!token.success || token.token === ""){
+            if(!token.success || token.token === "" || token.token === "undefined"){
                 return console.log('No token available',token)
             }
-            console.log(token)
             urlRequest = 'https://api.themoviedb.org/3/authentication/session/new' + api.key + '&request_token='+ token.token
-            let session = await fetch(urlRequest).then(reponse => reponse.json())
+            session = await fetch(urlRequest).then(reponse => reponse.json())
             if(!session.success){
                 return console.log('No session return by api',session)
             }
+
             urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/set'
+            this.postFormData(urlRequest,{'session':session.session_id})
+            
+            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set'
+            reponse = this.postFormData(urlRequest,{"token":token.token})
+
+            this.getFav()
+        },
+        postFormData: async function(url,dataSet) {
             let form = new FormData()
-            form.append('session',session.session_id)
-            let response = await fetch(urlRequest,{
+            for (const key in dataSet) {
+                if (dataSet.hasOwnProperty.call(dataSet, key)) {
+                    const element = dataSet[key];
+                    form.append(key,element)
+                }
+            }
+            let response = await fetch(url,{
                 method:'POST',
                 body:form
             }).then(response=>response.json())
-            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set'
-                form = new FormData()
-                form.append('token',"")
-                 response = await fetch(urlRequest,{
-                    method:'POST',
-                    body:form
-                }).then(response=>response.json())
+            return response
+        },
+        toggleFav:function(){
+            console.log('toggle')
+            this.setFav(this.type,this.id,!this.isFav())
+        },
+        getFav:async function(type){
+            if(typeof this.apiSession.session_id ==='undefined'){
+                return
+            }
+
+            let urlRequest = api.base +'/account/%7Baccount_id%7D/favorite/movies' + api.key + '&session_id=' + this.apiSession.session_id+ '&language=en-US&sort_by=created_at.asc&page=1'
+            this.getRequestApi(urlRequest,'favMovies')
+
+            urlRequest = api.base +'/account/%7Baccount_id%7D/favorite/tv' + api.key + '&session_id=' + this.apiSession.session_id+ '&language=en-US&sort_by=created_at.asc&page=1'
+            this.getRequestApi(urlRequest,'favTv')
+        },
+        setFav:function(type,id,state){
+            if(typeof this.apiSession.session_id ==='undefined'){
+                return
+            }
+            let urlRequest = api.base +'/account/%7Baccount_id%7D/favorite'+ api.key + '&session_id=' + this.apiSession.session_id
+            let fav = {
+                "media_type": type,
+                "media_id": id,
+                "favorite": state
+                }
+            fetch(urlRequest,{
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                  },
+                body: JSON.stringify(fav),
+                method:'POST',
+            }).then(reponse=>reponse.json()).then(json=>{
+                console.log(json)
+                this.favMovies = false
+                this.favTv = false
+                this.getFav()
+            })
+        },
+        isFav:function(){
+            let isFav = false
+            if(this.type == 'movie'){
+                this.favMovies.results.forEach(fav => {
+                    if(fav.id==this.id){
+                        isFav = true
+                    }
+                })
+            } else {
+                this.favTv.results.forEach(fav => {
+                    if(fav.id==this.id){
+                        isFav = true
+                    }
+                })
+            }
+            return isFav
         }
     },
     mounted(){
         this.getPrgInfo()
-        this.apiSession()
+        this.getSession()
     }
 })
 
@@ -198,15 +282,21 @@ app.component('prg-overview',{
             return (this.info.backdrop_path != null) ? this.info.backdrop_path : this.info.poster_path
         }
     },
-    props : ["info"],
+    props : ["info","fav"],
     template:
-        `<div class="prg_info">
-                <img class="prg_info__img" v-bind:src="picHighQual + img_path" >
-                <div class="prg_info__content">
-                    <h3 class="prg_info__title">{{ info.title }}</h3>  
-                    <p class="prg_info__overview">{{ info.overview }}</p>
-                </div>
-                <p class="prg_info__note"> {{ info.vote_average }} / 10</p>
+        `<div>
+            <div class="prg_info">
+                    <img class="prg_info__img" v-bind:src="picHighQual + img_path" >
+                    <div class="prg_info__content">
+                        <h3 class="prg_info__title">{{ info.title }}</h3>  
+                        <p class="prg_info__overview">{{ info.overview }}</p>
+                    </div>
+                    <p class="prg_info__note"> {{ info.vote_average }} / 10</p>
+                    
+            </div>
+            <button @click="$emit('toggleFav')">
+                {{ fav ? "is fav" : "not fav"}}
+            </button>
         </div>`
 })
 

@@ -60,7 +60,7 @@ $app->get('/token/get', TmdbapiController::class . ':getToken');
 
 $app->post('/token/set', TmdbapiController::class . ':setToken');
 
-$app->get('/session/get', TmdbapiController::class . ':getToken');
+$app->get('/session/get', TmdbapiController::class . ':getSession');
 
 $app->post('/session/set', TmdbapiController::class . ':setSession');
 

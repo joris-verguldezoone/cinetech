@@ -11,7 +11,7 @@
     <input type="hidden" name="type" value={{type}}>
     <input type="hidden" name="id" value={{id}}>
 </form>
-<prg-overview :info="overview"></prg-overview>
+<prg-overview :info="overview" :fav="fav" @toggle-fav="toggleFav()"></prg-overview>
 <details>
     <summary>Reviews</summary>
     <div class="prg-reviews">
