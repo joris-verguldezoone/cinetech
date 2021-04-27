@@ -83,29 +83,36 @@ class HomeController extends Controller
 
             $params = (array)$request->getParsedBody();
 
-            $login = $params['Login'];
-            $password = $params['Password'];
+            $image = $params['profilImage'];
+            $login = $params['profilLogin'];
+            $email = $params['profilEmail'];
+            $password = $params['profilPassword'];
+            $confirm_password = $params['confirmProfilPassword'];
+            
 
-            $InscriptionController = new \App\controller\InscriptionController();
-            $InscriptionController->register($login,$password);
+            $ProfilController = new \App\controller\ProfilController();
+            $ProfilController->modifyProfil($login,$password, $confirm_password, $email, $image);
         }
         else{
+            $image = "";
             $login = "";
             $email = "";
             $password = "";
             $confirm_password = "";
-
         }
 
         $this->preloadTwig();
         $response->getBody()->write($this->twig->render('profil.twig.php',
-        ['BASE_PATH' => BASE_PATH, 'method' => $method,'login'=>$login , 'password' => $password]));
+        ['BASE_PATH' => BASE_PATH, 'method' => $method,'login'=>$login , 'password' => $password,
+        'email' => $email, 'image' => $image
+        ]));
 
 
 
         return $response;
 
     }
+    
     
 }
  

@@ -46,6 +46,14 @@ abstract class  Model {
                 return false;
             }
         }
+    public function updateOneValue($nomTable, $colonne1,$colonne2, $value1,$value2){
+    
+        $sql = "UPDATE $nomTable SET $colonne1 = :value1 WHERE $colonne2= :value2";
+        $result = $this->pdo->prepare($sql);
+        $result->bindValue(":value1",$value1,\PDO::PARAM_STR);  
+        $result->bindValue(":value2",$value2,\PDO::PARAM_INT);  
+        $result->execute();
+    }
 
 }
 
