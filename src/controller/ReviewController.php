@@ -8,18 +8,16 @@ namespace App\controller;
 
 class ReviewController extends Controller{
 
-    public function get( $request, $response, $args)
+    public function get($request, $response, $args)
     {
         $ReviewModel = new \App\Model\ReviewModel();
         $result = $ReviewModel->fetchReview_id_type(550, 'movie');
-
-        var_dump($result);
         
         $result = json_encode($result);
 
         $response->getBody()->write($result); // write json encodé
 
-        return $response;
+        return $response->withHeader('Content-Type', 'application/json');
     }
 
 
