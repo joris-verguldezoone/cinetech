@@ -4,6 +4,7 @@ use App\controller\HomeController;
 use App\controller\TvController;
 use App\controller\MovieController;
 use App\controller\SearchController;
+use App\controller\ReviewController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -11,7 +12,6 @@ use App\controller\InscriptionController;
 require __DIR__ . '/vendor/autoload.php';
 
 session_start();
-var_dump($_SESSION);
 
 
 spl_autoload_register(function ($className) {
@@ -48,5 +48,6 @@ $app->map(['GET','POST'] ,'/connexion', HomeController::class . ':getConnexion')
 
 $app->map(['GET','POST'] ,'/profil', HomeController::class . ':getProfil');
 
+$app->map(['GET','POST'], '/review/{type}/{id}', ReviewController::class . ':get'); 
 
 $app->run();
