@@ -50,11 +50,48 @@ var app = Vue.createApp({
       }).then(function (json) {
         return _this[store] = json;
       });
+    },
+    apiConnect: function apiConnect() {
+      var urlRequest, token;
+      return regeneratorRuntime.async(function apiConnect$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              urlRequest = api.base + '/authentication/token/new' + api.key;
+              _context.next = 3;
+              return regeneratorRuntime.awrap(fetch(urlRequest).then(function (response) {
+                return response.json();
+              }));
+
+            case 3:
+              token = _context.sent;
+
+              if (token.success) {
+                _context.next = 7;
+                break;
+              }
+
+              console.log('Token request failed', token);
+              return _context.abrupt("return");
+
+            case 7:
+              urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
+              window.location.assign(urlRequest);
+
+            case 9:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, null, this);
     }
   },
   mounted: function mounted() {
     this.getPrgInfo();
   }
+});
+app.component('api-connect', {
+  template: "<button @click=\"$emit('apiConnect')\">Connect</button>"
 });
 app.component('search-modul', {
   data: function data() {
@@ -170,7 +207,7 @@ app.component('carrousel-custom', {
   mounted: function mounted() {
     this.getData();
   },
-  template: "<div class=\"carrousel\" >\n            <carrousel-item @change-page=\"$emit('changePage',$event)\" class=\"carrousel__item\" v-for=\"result in results\" :result=\"result\" :size=\"size\" :key=\"result.id\"></carrousel-item>\n        </div>"
+  template: "<div class=\"carrousel\" >\n            <carrousel-item @change-page=\"$emit('changePage',$event)\" class=\"carrousel__item\" v-for=\"result in results\"  :result=\"result\" :size=\"size\" :key=\"result.id\"></carrousel-item>\n        </div>"
 });
 app.component('carrousel-item', {
   data: function data() {
@@ -194,7 +231,7 @@ app.component('carrousel-item', {
       this.show = this.show === true ? false : true;
     }
   },
-  template: "<div >\n            <img @click=\"toggleVisibility\" class=\"car_item__img\" :class=\"classSizeModifObj\" v-bind:src=\"picLowQual + result.poster_path\" >\n            <modal-custom @closeModal=\"toggleVisibility\" @change-page=\"$emit('changePage',$event)\" v-if=\"show\" :result=\"result\"></modal-custom>\n        </div>"
+  template: "<div v-if=\"result.poster_path !== null\" >\n            <img @click=\"toggleVisibility\" class=\"car_item__img\" :class=\"classSizeModifObj\" v-bind:src=\"picLowQual + result.poster_path\" >\n            <modal-custom @closeModal=\"toggleVisibility\" @change-page=\"$emit('changePage',$event)\" v-if=\"show\" :result=\"result\"></modal-custom>\n        </div>"
 });
 app.component('modal-custom', {
   data: function data() {
@@ -220,5 +257,8 @@ app.component('modal-custom', {
     this.titleHandeling();
   },
   template: "<div class=\"modal\">\n            <button @click=\"$emit('closeModal')\" class=\"modal__close_btn\">X</button>\n            <img class=\"modal__photo\" v-bind:src=\"picHighQual + img_path\" >\n            <div class=\"modal__content\">\n                <h3>{{ result.title }}</h3>\n                <p>Overview : {{ result.overview }}</p>\n                <p>Vote : {{ result.vote_average }}</p>\n                <button @click=\"$emit('changePage', { page : type, id : id })\">More information</button>\n            </div>\n        </div>"
+});
+app.component('favorite-button', {
+  template: "<div>\n        <button>{{ is-favorite }}</button>\n    </div>"
 });
 var vm = app.mount('#app');

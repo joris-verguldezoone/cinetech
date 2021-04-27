@@ -10,10 +10,10 @@
                     <a class="nav-link active" aria-current="page" href="#">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Movies</a>
+                    <a class="nav-link" href="{{BASE_PATH}}/movies">Movies</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Tv</a>
+                    <a class="nav-link" href="{{BASE_PATH}}/tv">Tv</a>
                 </li>
 
                 <li class="nav-item">

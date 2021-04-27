@@ -45,11 +45,26 @@ const app = Vue.createApp({
             fetch(urlRequest)
                 .then(response => response.json())
                 .then(json => this[store] = json)
+        },
+        apiConnect: async function(){
+            let urlRequest = api.base + '/authentication/token/new' + api.key
+            let token = await fetch(urlRequest).then(response=>response.json())
+            if(!token.success){
+                console.log('Token request failed',token)
+                return
+            }
+            urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
+            window.location.assign(urlRequest)
         }
     },
     mounted(){
         this.getPrgInfo()
     }
+})
+
+app.component('api-connect',{
+    template:
+    `<button @click="$emit('apiConnect')">Connect</button>`
 })
 
 app.component('search-modul',{
@@ -135,8 +150,6 @@ app.component('search-modul',{
     `
 })
 
-
-
 app.component('prg-overview',{
     data() {
         return {
@@ -208,7 +221,7 @@ app.component('carrousel-custom', {
     },
     template:
         `<div class="carrousel" >
-            <carrousel-item @change-page="$emit('changePage',$event)" class="carrousel__item" v-for="result in results" :result="result" :size="size" :key="result.id"></carrousel-item>
+            <carrousel-item @change-page="$emit('changePage',$event)" class="carrousel__item" v-for="result in results"  :result="result" :size="size" :key="result.id"></carrousel-item>
         </div>`
 })
 
@@ -235,7 +248,7 @@ app.component('carrousel-item', {
         },
     },
     template:
-        `<div >
+        `<div v-if="result.poster_path !== null" >
             <img @click="toggleVisibility" class="car_item__img" :class="classSizeModifObj" v-bind:src="picLowQual + result.poster_path" >
             <modal-custom @closeModal="toggleVisibility" @change-page="$emit('changePage',$event)" v-if="show" :result="result"></modal-custom>
         </div>`
@@ -275,6 +288,13 @@ app.component('modal-custom', {
                 <button @click="$emit('changePage', { page : type, id : id })">More information</button>
             </div>
         </div>`
+})
+
+app.component('favorite-button',{
+    template:
+    `<div>
+        <button>{{ is-favorite }}</button>
+    </div>`
 })
 
 const vm = app.mount('#app')

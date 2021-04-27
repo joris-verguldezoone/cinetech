@@ -4,8 +4,6 @@ use App\controller\HomeController;
 use App\controller\TvController;
 use App\controller\MovieController;
 use App\controller\SearchController;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/vendor/autoload.php';
@@ -32,7 +30,11 @@ $app->get('/', HomeController::class . ':main');
 
 $app->get('/movie/{id}', MovieController::class . ':show');
 
+$app->get('/movies', MovieController::class . ':main');
+
 $app->get('/tv/{id}', TvController::class . ':show');
+
+$app->get('/tv', TvController::class . ':main');
 
 $app->get('/search/{keywords}', SearchController::class . ':results');
 
