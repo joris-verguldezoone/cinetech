@@ -52,7 +52,7 @@ var app = Vue.createApp({
       });
     },
     apiConnect: function apiConnect() {
-      var urlRequest, token;
+      var urlRequest, token, form, response;
       return regeneratorRuntime.async(function apiConnect$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -67,20 +67,111 @@ var app = Vue.createApp({
               token = _context.sent;
 
               if (token.success) {
-                _context.next = 7;
+                _context.next = 9;
                 break;
               }
 
               console.log('Token request failed', token);
               return _context.abrupt("return");
 
-            case 7:
+            case 9:
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set';
+              form = new FormData();
+              form.append('token', token.request_token);
+              _context.next = 14;
+              return regeneratorRuntime.awrap(fetch(urlRequest, {
+                method: 'POST',
+                body: form
+              }).then(function (response) {
+                return response.json();
+              }));
+
+            case 14:
+              response = _context.sent;
+              console.log(response);
+
+            case 16:
               urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
               window.location.assign(urlRequest);
 
-            case 9:
+            case 18:
             case "end":
               return _context.stop();
+          }
+        }
+      }, null, this);
+    },
+    apiSession: function apiSession() {
+      var urlRequest, token, session, form, response;
+      return regeneratorRuntime.async(function apiSession$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get';
+              _context2.next = 3;
+              return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
+                return reponse.json();
+              }));
+
+            case 3:
+              token = _context2.sent;
+
+              if (!(!token.success || token.token === "")) {
+                _context2.next = 6;
+                break;
+              }
+
+              return _context2.abrupt("return", console.log('No token available', token));
+
+            case 6:
+              console.log(token);
+              urlRequest = 'https://api.themoviedb.org/3/authentication/session/new' + api.key + '&request_token=' + token.token;
+              _context2.next = 10;
+              return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
+                return reponse.json();
+              }));
+
+            case 10:
+              session = _context2.sent;
+
+              if (session.success) {
+                _context2.next = 13;
+                break;
+              }
+
+              return _context2.abrupt("return", console.log('No session return by api', session));
+
+            case 13:
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/set';
+              form = new FormData();
+              form.append('session', session.session_id);
+              _context2.next = 18;
+              return regeneratorRuntime.awrap(fetch(urlRequest, {
+                method: 'POST',
+                body: form
+              }).then(function (response) {
+                return response.json();
+              }));
+
+            case 18:
+              response = _context2.sent;
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set';
+              form = new FormData();
+              form.append('token', "");
+              _context2.next = 24;
+              return regeneratorRuntime.awrap(fetch(urlRequest, {
+                method: 'POST',
+                body: form
+              }).then(function (response) {
+                return response.json();
+              }));
+
+            case 24:
+              response = _context2.sent;
+
+            case 25:
+            case "end":
+              return _context2.stop();
           }
         }
       }, null, this);
@@ -88,10 +179,11 @@ var app = Vue.createApp({
   },
   mounted: function mounted() {
     this.getPrgInfo();
+    this.apiSession();
   }
 });
 app.component('api-connect', {
-  template: "<button @click=\"$emit('apiConnect')\">Connect</button>"
+  template: "<button class='btn btn-primary' @click=\"$emit('apiConnect')\">Connect</button>"
 });
 app.component('search-modul', {
   data: function data() {

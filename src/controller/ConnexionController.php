@@ -2,6 +2,7 @@
 
 namespace App\controller;
 
+use App\Model\ApiModel;
 
 class ConnexionController extends Controller
 {
@@ -33,7 +34,12 @@ class ConnexionController extends Controller
                     // $this->login = $utilisateur['user']['login'];
                     // $this->email = $utilisateur['user']['email'];
                     // $this->id_right = $utilisateur['user']['id_right'];
-    
+                    
+                    // Delete session id & user
+                    $apiModel = new ApiModel();
+                    $apiModel->setSession($_SESSION['user']['id'],"");
+                    $apiModel->setToken($_SESSION['user']['id'],"");
+
                     $this->redirect('profil'); // GG WP
                 } else {
                     $errorLog = "<p class='alert alert-danger' role='alert'>Mot de passe incorrect</p>";
@@ -48,5 +54,3 @@ class ConnexionController extends Controller
     }
 
 }
-
-?>

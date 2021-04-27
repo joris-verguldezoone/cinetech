@@ -6,7 +6,7 @@ use App\Model\ApiModel;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class TdmapiController extends Controller
+class TmdbapiController extends Controller
 {
     protected $model;
 
@@ -19,28 +19,35 @@ class TdmapiController extends Controller
     {
         if ($_SESSION['connected']) {
             if ($token = $this->model->getToken($_SESSION['user']['id'])) {
-                $json = ["success" => true, "message" => "Token successfully get.", "token" => $token];
+                $json = ["success" => true, "message" => "Token successfully get.", "token" => $token['api_token']];
             } else {
                 $json = ["success" => false, "message" => "Token were not get. Issue when query db"];
             }
         } else {
             $json = ["success" => false, "message" => "User is not connected"];
         }
-        $this->returnJson($response, $json);
+        $payload = json_encode($json);
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
     }
 
     public function setToken(Request $request, Response $response, $args)
     {
-        if ($_SESSION['connected']) {
-            if ($this->model->setToken($_SESSION['user']['id'], $args['token'])) {
+        if (isset($request->getParsedBody()['token'])) {
+            $token = $request->getParsedBody()['token'];
+        }
+        if ($_SESSION['connected'] && isset($token)) {
+            if ($this->model->setToken($_SESSION['user']['id'], $token)) {
                 $json = ["success" => true, "message" => "Token successfully set."];
             } else {
                 $json = ["success" => false, "message" => "Token were not set. Issue when updated in db"];
             }
         } else {
-            $json = ["success" => false, "message" => "User is not connected"];
+            $json = ["success" => false, "message" => "User is not connected or token were not given."];
         }
-        $this->returnJson($response, $json);
+        $payload = json_encode($json);
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
     }
 
     public function getSession(Request $request, Response $response, $args)
@@ -54,13 +61,18 @@ class TdmapiController extends Controller
         } else {
             $json = ["success" => false, "message" => "User is not connected"];
         }
-        $this->returnJson($response, $json);
+        $payload = json_encode($json);
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
     }
 
     public function setSession(Request $request, Response $response, $args)
     {
+        if (isset($request->getParsedBody()['session'])) {
+            $session = $request->getParsedBody()['session'];
+        }
         if ($_SESSION['connected']) {
-            if ($this->model->setSession($_SESSION['user']['id'], $args['session'])) {
+            if ($this->model->setSession($_SESSION['user']['id'], $session)) {
                 $json = ["success" => true, "message" => "Session successfully set."];
             } else {
                 $json = ["success" => false, "message" => "Session were not set. Issue when updated in db"];
@@ -68,13 +80,8 @@ class TdmapiController extends Controller
         } else {
             $json = ["success" => false, "message" => "User is not connected"];
         }
-        $this->returnJson($response, $json);
-    }
-
-    public function returnJson(Response $response, array $data)
-    {
-        $payload = json_encode($data);
+        $payload = json_encode($json);
         $response->getBody()->write($payload);
-        return $response->withHeader('ContentType', 'application/json');
+        return $response->withHeader('Content-Type', 'application/json');
     }
 }

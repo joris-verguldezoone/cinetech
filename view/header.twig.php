@@ -23,7 +23,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Favorite</a>
+                    <a class="nav-link " href="{{BASE_PATH}}/favorite" tabindex="-1" aria-disabled="true">Favorite</a>
                 </li>
             </ul>
             <div id="searchBarPlaceHolder"></div>

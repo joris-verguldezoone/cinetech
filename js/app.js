@@ -52,19 +52,56 @@ const app = Vue.createApp({
             if(!token.success){
                 console.log('Token request failed',token)
                 return
+            } else {
+                urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set'
+                let form = new FormData()
+                form.append('token',token.request_token)
+                let response = await fetch(urlRequest,{
+                    method:'POST',
+                    body:form
+                }).then(response=>response.json())
+                console.log(response)
             }
             urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
             window.location.assign(urlRequest)
+        },
+        apiSession: async function(){
+            let urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get'
+            let token = await fetch(urlRequest).then(reponse => reponse.json())
+            if(!token.success || token.token === ""){
+                return console.log('No token available',token)
+            }
+            console.log(token)
+            urlRequest = 'https://api.themoviedb.org/3/authentication/session/new' + api.key + '&request_token='+ token.token
+            let session = await fetch(urlRequest).then(reponse => reponse.json())
+            if(!session.success){
+                return console.log('No session return by api',session)
+            }
+            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/set'
+            let form = new FormData()
+            form.append('session',session.session_id)
+            let response = await fetch(urlRequest,{
+                method:'POST',
+                body:form
+            }).then(response=>response.json())
+            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set'
+                form = new FormData()
+                form.append('token',"")
+                 response = await fetch(urlRequest,{
+                    method:'POST',
+                    body:form
+                }).then(response=>response.json())
         }
     },
     mounted(){
         this.getPrgInfo()
+        this.apiSession()
     }
 })
 
 app.component('api-connect',{
     template:
-    `<button @click="$emit('apiConnect')">Connect</button>`
+    `<button class='btn btn-primary' @click="$emit('apiConnect')">Connect</button>`
 })
 
 app.component('search-modul',{
