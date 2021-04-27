@@ -6,6 +6,7 @@ use App\controller\MovieController;
 use App\controller\SearchController;
 use Slim\Factory\AppFactory;
 use App\controller\InscriptionController;
+
 require __DIR__ . '/vendor/autoload.php';
 
 session_start();
@@ -44,11 +45,11 @@ $app->get('/tv', TvController::class . ':main');
 
 $app->get('/search/{keywords}', SearchController::class . ':results');
 
-$app->map(['GET','POST'] ,'/inscription', HomeController::class . ':getInscription');
+$app->map(['GET', 'POST'], '/inscription', HomeController::class . ':getInscription');
 
-$app->map(['GET','POST'] ,'/connexion', HomeController::class . ':getConnexion');
+$app->map(['GET', 'POST'], '/connexion', HomeController::class . ':getConnexion');
 
-$app->map(['GET','POST'] ,'/profil', HomeController::class . ':getProfil');
+$app->map(['GET', 'POST'], '/profil', HomeController::class . ':getProfil');
 
 
 $app->run();
