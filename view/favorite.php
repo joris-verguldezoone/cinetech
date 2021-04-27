@@ -7,7 +7,7 @@
 {% block content %}
 {{ parent() }}
 <h1>Favorite </h1>
-<favorite-list></favorite-list>
+<!--<favorite-list></favorite-list>-->
 {% endblock %}
 
 {% block script %}
