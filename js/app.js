@@ -257,14 +257,14 @@ app.component('search-modul',{
         <div v-if="showResults" >
             <h2>Results for : {{keywords}}</h2>
             <div class="result" @click="$emit('changePage',{page:result.media_type , id:result.id})" v-for="result in results.results">
-                    <div v-if="showResult(result)">
+                <div v-if="showResult(result)">
                     <img class="result__img" v-bind:src="picLowQual + result.poster_path">
                     <div class="result__content">
                         <h3>{{title(result)}} <span class="result__type">type: {{result.media_type }}</span></h3> 
                         <p>{{result.overview}}</p>
                     </div>
                     <div class="result__clear"></div>
-                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -297,9 +297,11 @@ app.component('prg-overview',{
                     <div class="prg_info__content">
                         <h3 class="prg_info__title">{{ info.title }}</h3>  
                         <p class="prg_info__overview">{{ info.overview }}</p>
+                        </div>
+                    <div class="prg_info__favorite">
+                        <div :class="heart" @click="$emit('toggleFav')"></div>
                     </div>
                     <p class="prg_info__note"> {{ info.vote_average }} / 10</p>
-                    <div  :class="heart" @click="$emit('toggleFav')"></div>
             </div>   
         </div>`
 })
@@ -421,5 +423,33 @@ app.component('modal-custom', {
         </div>`
 })
 
+app.component('favorite-list',{
+    data() {
+        return {
+            picLowQual: api.picLowQual,
+        }
+    },
+    props:['favList'],
+    methods:{
+        type(result){
+            return typeof result.title !== 'undefined' ? 'movie' : 'tv'
+        },
+        title(result) {
+            return typeof result.title !== 'undefined' ? result.title : result.name
+        }
+    },
+    template:
+    `
+    <div class="result" @click="$emit('changePage',{page: type(result) , id:result.id})" v-for="result in favList.results">
+        <img class="result__img" v-bind:src="picLowQual + result.poster_path">
+        <div class="result__content">
+            <h3>{{title(result)}} <span class="result__type">type: {{ type(result) }}</span></h3> 
+            <p>{{result.overview}}</p>
+        </div>
+        <div class="result__clear"></div>
+    </div>
+    `
+
+})
 
 const vm = app.mount('#app')

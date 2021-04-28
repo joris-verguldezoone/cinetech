@@ -372,7 +372,7 @@ app.component('search-modul', {
       this.getResults();
     }
   },
-  template: "<div>\n        <teleport to=\"#searchBarPlaceHolder\">\n            <form @submit.prevent=\"$emit('changePage',{ page :'search', keyword:query})\" class=\"d-flex\">   \n                <input class=\"form-control me-2\"  placeholder=\"Search\" type=\"search\" list=\"keywords\" v-model=\"query\" />\n                <datalist id=\"keywords\">\n                    <option v-for=\"result in dataList.results\" :value=\"title(result)\" />\n                </datalist>\n                <button class=\"btn btn-outline-danger\" type=\"submit\">Search</button>\n            </form>\n        </teleport>\n        <div v-if=\"showResults\" >\n            <h2>Results for : {{keywords}}</h2>\n            <div class=\"result\" @click=\"$emit('changePage',{page:result.media_type , id:result.id})\" v-for=\"result in results.results\">\n                    <div v-if=\"showResult(result)\">\n                    <img class=\"result__img\" v-bind:src=\"picLowQual + result.poster_path\">\n                    <div class=\"result__content\">\n                        <h3>{{title(result)}} <span class=\"result__type\">type: {{result.media_type }}</span></h3> \n                        <p>{{result.overview}}</p>\n                    </div>\n                    <div class=\"result__clear\"></div>\n                    </div>\n            </div>\n        </div>\n    </div>\n    "
+  template: "<div>\n        <teleport to=\"#searchBarPlaceHolder\">\n            <form @submit.prevent=\"$emit('changePage',{ page :'search', keyword:query})\" class=\"d-flex\">   \n                <input class=\"form-control me-2\"  placeholder=\"Search\" type=\"search\" list=\"keywords\" v-model=\"query\" />\n                <datalist id=\"keywords\">\n                    <option v-for=\"result in dataList.results\" :value=\"title(result)\" />\n                </datalist>\n                <button class=\"btn btn-outline-danger\" type=\"submit\">Search</button>\n            </form>\n        </teleport>\n        <div v-if=\"showResults\" >\n            <h2>Results for : {{keywords}}</h2>\n            <div class=\"result\" @click=\"$emit('changePage',{page:result.media_type , id:result.id})\" v-for=\"result in results.results\">\n                <div v-if=\"showResult(result)\">\n                    <img class=\"result__img\" v-bind:src=\"picLowQual + result.poster_path\">\n                    <div class=\"result__content\">\n                        <h3>{{title(result)}} <span class=\"result__type\">type: {{result.media_type }}</span></h3> \n                        <p>{{result.overview}}</p>\n                    </div>\n                    <div class=\"result__clear\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n    "
 });
 app.component('prg-overview', {
   data: function data() {
@@ -393,7 +393,7 @@ app.component('prg-overview', {
     }
   },
   props: ["info", "fav"],
-  template: "<div>\n            <div class=\"prg_info\">\n                    <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                    <div class=\"prg_info__content\">\n                        <h3 class=\"prg_info__title\">{{ info.title }}</h3>  \n                        <p class=\"prg_info__overview\">{{ info.overview }}</p>\n                    </div>\n                    <p class=\"prg_info__note\"> {{ info.vote_average }} / 10</p>\n                    <div  :class=\"heart\" @click=\"$emit('toggleFav')\"></div>\n            </div>   \n        </div>"
+  template: "<div>\n            <div class=\"prg_info\">\n                    <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                    <div class=\"prg_info__content\">\n                        <h3 class=\"prg_info__title\">{{ info.title }}</h3>  \n                        <p class=\"prg_info__overview\">{{ info.overview }}</p>\n                        </div>\n                    <div class=\"prg_info__favorite\">\n                        <div :class=\"heart\" @click=\"$emit('toggleFav')\"></div>\n                    </div>\n                    <p class=\"prg_info__note\"> {{ info.vote_average }} / 10</p>\n            </div>   \n        </div>"
 });
 app.component('prg-review', {
   props: ['review'],
@@ -482,5 +482,22 @@ app.component('modal-custom', {
     this.titleHandeling();
   },
   template: "<div class=\"modal\">\n            <button @click=\"$emit('closeModal')\" class=\"modal__close_btn\">X</button>\n            <img class=\"modal__photo\" v-bind:src=\"picHighQual + img_path\" >\n            <div class=\"modal__content\">\n                <h3>{{ result.title }}</h3>\n                <p>Overview : {{ result.overview }}</p>\n                <p>Vote : {{ result.vote_average }}</p>\n                <button @click=\"$emit('changePage', { page : type, id : id })\">More information</button>\n            </div>\n        </div>"
+});
+app.component('favorite-list', {
+  data: function data() {
+    return {
+      picLowQual: api.picLowQual
+    };
+  },
+  props: ['favList'],
+  methods: {
+    type: function type(result) {
+      return typeof result.title !== 'undefined' ? 'movie' : 'tv';
+    },
+    title: function title(result) {
+      return typeof result.title !== 'undefined' ? result.title : result.name;
+    }
+  },
+  template: "\n    <div class=\"result\" @click=\"$emit('changePage',{page: type(result) , id:result.id})\" v-for=\"result in favList.results\">\n        <img class=\"result__img\" v-bind:src=\"picLowQual + result.poster_path\">\n        <div class=\"result__content\">\n            <h3>{{title(result)}} <span class=\"result__type\">type: {{ type(result) }}</span></h3> \n            <p>{{result.overview}}</p>\n        </div>\n        <div class=\"result__clear\"></div>\n    </div>\n    "
 });
 var vm = app.mount('#app');
