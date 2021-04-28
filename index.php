@@ -5,10 +5,12 @@ use App\controller\TvController;
 use App\controller\MovieController;
 use App\controller\SearchController;
 use App\controller\ReviewController;
+use App\controller\TmdbapiController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use App\controller\InscriptionController;
+
 require __DIR__ . '/vendor/autoload.php';
 
 session_start();
@@ -38,16 +40,28 @@ $app->get('/', HomeController::class . ':main');
 
 $app->get('/movie/{id}', MovieController::class . ':show');
 
+$app->get('/movies', MovieController::class . ':main');
+
 $app->get('/tv/{id}', TvController::class . ':show');
+
+$app->get('/tv', TvController::class . ':main');
 
 $app->get('/search/{keywords}', SearchController::class . ':results');
 
-$app->map(['GET','POST'] ,'/inscription', HomeController::class . ':getInscription');
+$app->map(['GET', 'POST'], '/inscription', HomeController::class . ':getInscription');
 
-$app->map(['GET','POST'] ,'/connexion', HomeController::class . ':getConnexion');
+$app->map(['GET', 'POST'], '/connexion', HomeController::class . ':getConnexion');
 
-$app->map(['GET','POST'] ,'/profil', HomeController::class . ':getProfil');
+$app->map(['GET', 'POST'], '/profil', HomeController::class . ':getProfil');
 
-$app->map(['GET','POST'], '/review/{type}/{id}', ReviewController::class . ':get'); 
+$app->map(['GET', 'POST'], '/review/{type}/{id}', ReviewController::class . ':get');
+
+$app->get('/token/get', TmdbapiController::class . ':getToken');
+
+$app->post('/token/set', TmdbapiController::class . ':setToken');
+
+$app->get('/session/get', TmdbapiController::class . ':getSession');
+
+$app->post('/session/set', TmdbapiController::class . ':setSession');
 
 $app->run();

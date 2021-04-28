@@ -13,7 +13,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    overflow-y: hidden;
+    overflow-y: hidden !important;
     &__item{
         position: relative;
         margin-right: 1vmin;
@@ -184,3 +184,68 @@
 summary{
     font-size: 5vmin;
 }
+
+.result{
+    display: flex;
+    padding: 2vmin;
+    margin-bottom: 1vmin;
+    &__img{
+        object-fit: cover;
+        width: 15vmin;
+        height: 15vmin;
+        float: left;
+        margin: 1vmin;
+    }
+    &__content{
+        color:white;
+    }
+    &__clear{
+        clear:left;
+    }
+    &__type{
+        color:rosybrown;
+    }
+}
+
+
+.heart {
+    display: inline-block;
+    height: 30px;
+    margin: 0 10px;
+    position: relative;
+    top: 0;
+    transform: rotate(-45deg);
+    width: 30px;
+    z-index: 20;
+  }
+  
+  .heart:before,
+  .heart:after {
+    content: "";
+    border-radius: 50%;
+    height: 30px;
+    position: absolute;
+    width: 30px;
+    z-index: 20;
+  }
+
+  .heart--red, .heart--red:before, .heart--red:after {
+    background-color: red;
+  }
+
+  .heart--black, .heart--black:before, .heart--black:after{
+    background-color:  rgb(51, 51, 51);
+  }
+
+  
+  .heart:before {
+    top: -15px;
+    left: 0;
+    z-index: 20;
+  }
+  
+  .heart:after {
+    left: 15px;
+    top: 0;
+    z-index: 20;
+  }

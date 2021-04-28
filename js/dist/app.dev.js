@@ -7,7 +7,11 @@ var app = Vue.createApp({
       id: 0,
       credits: {},
       reviews: {},
-      overview: {}
+      overview: {},
+      favMovies: false,
+      favTv: false,
+      apiSession: {},
+      fav: ''
     };
   },
   computed: {
@@ -20,6 +24,16 @@ var app = Vue.createApp({
       this.get('credits');
       this.get('reviews');
       this.get('overview');
+    },
+    favTv: function favTv() {
+      if (this.favMovies && this.favTv) {
+        this.fav = this.isFav();
+      }
+    },
+    favMovies: function favMovies() {
+      if (this.favMovies && this.favTv) {
+        this.fav = this.isFav();
+      }
     },
     overview: function overview() {
       this.overview.title = typeof this.overview.title !== 'undefined' ? this.overview.title : this.overview.name;
@@ -48,20 +62,262 @@ var app = Vue.createApp({
       fetch(urlRequest).then(function (response) {
         return response.json();
       }).then(function (json) {
-        return _this[store] = json;
+        _this[store] = json;
       });
+    },
+    apiConnect: function apiConnect() {
+      var urlRequest, token;
+      return regeneratorRuntime.async(function apiConnect$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              urlRequest = api.base + '/authentication/token/new' + api.key;
+              _context.next = 3;
+              return regeneratorRuntime.awrap(fetch(urlRequest).then(function (response) {
+                return response.json();
+              }));
+
+            case 3:
+              token = _context.sent;
+
+              if (token.success) {
+                _context.next = 9;
+                break;
+              }
+
+              console.log('Token request failed', token);
+              return _context.abrupt("return");
+
+            case 9:
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set';
+              _context.next = 12;
+              return regeneratorRuntime.awrap(this.postFormData(urlRequest, {
+                "token": token.request_token
+              }));
+
+            case 12:
+              reponse = _context.sent;
+              console.log(reponse);
+
+            case 14:
+              urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
+              window.location.assign(urlRequest);
+
+            case 16:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, null, this);
+    },
+    getSession: function getSession() {
+      var urlRequest, session, token;
+      return regeneratorRuntime.async(function getSession$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/get';
+              _context2.next = 3;
+              return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
+                return reponse.json();
+              }));
+
+            case 3:
+              session = _context2.sent;
+
+              if (!(session.session.api_session.length > 0)) {
+                _context2.next = 9;
+                break;
+              }
+
+              this.apiSession.session_id = session.session.api_session;
+              this.getFav();
+              console.log('Session already started', session);
+              return _context2.abrupt("return");
+
+            case 9:
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get';
+              _context2.next = 12;
+              return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
+                return reponse.json();
+              }));
+
+            case 12:
+              token = _context2.sent;
+
+              if (!(!token.success || token.token === "" || token.token === "undefined")) {
+                _context2.next = 15;
+                break;
+              }
+
+              return _context2.abrupt("return", console.log('No token available', token));
+
+            case 15:
+              urlRequest = 'https://api.themoviedb.org/3/authentication/session/new' + api.key + '&request_token=' + token.token;
+              _context2.next = 18;
+              return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
+                return reponse.json();
+              }));
+
+            case 18:
+              session = _context2.sent;
+
+              if (session.success) {
+                _context2.next = 21;
+                break;
+              }
+
+              return _context2.abrupt("return", console.log('No session return by api', session));
+
+            case 21:
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/set';
+              this.postFormData(urlRequest, {
+                'session': session.session_id
+              });
+              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set';
+              reponse = this.postFormData(urlRequest, {
+                "token": token.token
+              });
+              this.getFav();
+
+            case 26:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, null, this);
+    },
+    postFormData: function postFormData(url, dataSet) {
+      var form, key, element, response;
+      return regeneratorRuntime.async(function postFormData$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              form = new FormData();
+
+              for (key in dataSet) {
+                if (dataSet.hasOwnProperty.call(dataSet, key)) {
+                  element = dataSet[key];
+                  form.append(key, element);
+                }
+              }
+
+              _context3.next = 4;
+              return regeneratorRuntime.awrap(fetch(url, {
+                method: 'POST',
+                body: form
+              }).then(function (response) {
+                return response.json();
+              }));
+
+            case 4:
+              response = _context3.sent;
+              return _context3.abrupt("return", response);
+
+            case 6:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      });
+    },
+    toggleFav: function toggleFav() {
+      console.log('toggle');
+      this.setFav(this.type, this.id, !this.isFav());
+    },
+    getFav: function getFav(type) {
+      var urlRequest;
+      return regeneratorRuntime.async(function getFav$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              if (!(typeof this.apiSession.session_id === 'undefined')) {
+                _context4.next = 2;
+                break;
+              }
+
+              return _context4.abrupt("return");
+
+            case 2:
+              urlRequest = api.base + '/account/%7Baccount_id%7D/favorite/movies' + api.key + '&session_id=' + this.apiSession.session_id + '&language=en-US&sort_by=created_at.asc&page=1';
+              this.getRequestApi(urlRequest, 'favMovies');
+              urlRequest = api.base + '/account/%7Baccount_id%7D/favorite/tv' + api.key + '&session_id=' + this.apiSession.session_id + '&language=en-US&sort_by=created_at.asc&page=1';
+              this.getRequestApi(urlRequest, 'favTv');
+
+            case 6:
+            case "end":
+              return _context4.stop();
+          }
+        }
+      }, null, this);
+    },
+    setFav: function setFav(type, id, state) {
+      var _this2 = this;
+
+      if (typeof this.apiSession.session_id === 'undefined') {
+        return;
+      }
+
+      var urlRequest = api.base + '/account/%7Baccount_id%7D/favorite' + api.key + '&session_id=' + this.apiSession.session_id;
+      var fav = {
+        "media_type": type,
+        "media_id": id,
+        "favorite": state
+      };
+      fetch(urlRequest, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(fav),
+        method: 'POST'
+      }).then(function (reponse) {
+        return reponse.json();
+      }).then(function (json) {
+        console.log(json);
+        _this2.favMovies = false;
+        _this2.favTv = false;
+
+        _this2.getFav();
+      });
+    },
+    isFav: function isFav() {
+      var _this3 = this;
+
+      var isFav = false;
+
+      if (this.type == 'movie') {
+        this.favMovies.results.forEach(function (fav) {
+          if (fav.id == _this3.id) {
+            isFav = true;
+          }
+        });
+      } else {
+        this.favTv.results.forEach(function (fav) {
+          if (fav.id == _this3.id) {
+            isFav = true;
+          }
+        });
+      }
+
+      return isFav;
     }
   },
   mounted: function mounted() {
     this.getPrgInfo();
+    this.getSession();
   }
+});
+app.component('api-connect', {
+  template: "<button class='btn btn-primary' @click=\"$emit('apiConnect')\">Connect</button>"
 });
 app.component('search-modul', {
   data: function data() {
     return {
       query: '',
       dataList: {},
-      results: {}
+      results: {},
+      picLowQual: api.picLowQual
     };
   },
   props: ['keywords'],
@@ -85,12 +341,12 @@ app.component('search-modul', {
       this.getRequestApi(urlRequest, 'results');
     },
     getRequestApi: function getRequestApi(urlRequest, store) {
-      var _this2 = this;
+      var _this4 = this;
 
       fetch(urlRequest).then(function (response) {
         return response.json();
       }).then(function (json) {
-        return _this2[store] = json;
+        return _this4[store] = json;
       });
     },
     title: function title(data) {
@@ -106,6 +362,9 @@ app.component('search-modul', {
         default:
           break;
       }
+    },
+    showResult: function showResult(result) {
+      return (result.media_type === 'tv' || result.media_type === 'movie') && result.poster_path !== null ? true : false;
     }
   },
   mounted: function mounted() {
@@ -113,7 +372,7 @@ app.component('search-modul', {
       this.getResults();
     }
   },
-  template: "<div>\n        <teleport to=\"#searchBarPlaceHolder\">\n            <form @submit.prevent=\"$emit('changePage',{ page :'search', keyword:query})\" class=\"d-flex\">   \n                <input class=\"form-control me-2\"  placeholder=\"Search\" type=\"search\" list=\"keywords\" v-model=\"query\" />\n                <datalist id=\"keywords\">\n                    <option v-for=\"result in dataList.results\" :value=\"title(result)\" />\n                </datalist>\n                <button class=\"btn btn-outline-danger\" type=\"submit\">Search</button>\n            </form>\n        </teleport>\n        <div v-if=\"showResults\">\n            <h2>Results for : {{keywords}}</h2>\n            <ul>\n                <li v-for=\"result in results.results\">{{title(result)}}</li>\n            </ul>\n        </div>\n    </div>\n    "
+  template: "<div>\n        <teleport to=\"#searchBarPlaceHolder\">\n            <form @submit.prevent=\"$emit('changePage',{ page :'search', keyword:query})\" class=\"d-flex\">   \n                <input class=\"form-control me-2\"  placeholder=\"Search\" type=\"search\" list=\"keywords\" v-model=\"query\" />\n                <datalist id=\"keywords\">\n                    <option v-for=\"result in dataList.results\" :value=\"title(result)\" />\n                </datalist>\n                <button class=\"btn btn-outline-danger\" type=\"submit\">Search</button>\n            </form>\n        </teleport>\n        <div v-if=\"showResults\" >\n            <h2>Results for : {{keywords}}</h2>\n            <div class=\"result\" @click=\"$emit('changePage',{page:result.media_type , id:result.id})\" v-for=\"result in results.results\">\n                    <div v-if=\"showResult(result)\">\n                    <img class=\"result__img\" v-bind:src=\"picLowQual + result.poster_path\">\n                    <div class=\"result__content\">\n                        <h3>{{title(result)}} <span class=\"result__type\">type: {{result.media_type }}</span></h3> \n                        <p>{{result.overview}}</p>\n                    </div>\n                    <div class=\"result__clear\"></div>\n                    </div>\n            </div>\n        </div>\n    </div>\n    "
 });
 app.component('prg-overview', {
   data: function data() {
@@ -124,10 +383,17 @@ app.component('prg-overview', {
   computed: {
     img_path: function img_path() {
       return this.info.backdrop_path != null ? this.info.backdrop_path : this.info.poster_path;
+    },
+    heart: function heart() {
+      return {
+        'heart': this.fav !== '' ? true : false,
+        'heart--red': this.fav === true ? true : false,
+        'heart--black': this.fav === false ? true : false
+      };
     }
   },
-  props: ["info"],
-  template: "<div class=\"prg_info\">\n                <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                <div class=\"prg_info__content\">\n                    <h3 class=\"prg_info__title\">{{ info.title }}</h3>  \n                    <p class=\"prg_info__overview\">{{ info.overview }}</p>\n                </div>\n                <p class=\"prg_info__note\"> {{ info.vote_average }} / 10</p>\n        </div>"
+  props: ["info", "fav"],
+  template: "<div>\n            <div class=\"prg_info\">\n                    <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                    <div class=\"prg_info__content\">\n                        <h3 class=\"prg_info__title\">{{ info.title }}</h3>  \n                        <p class=\"prg_info__overview\">{{ info.overview }}</p>\n                    </div>\n                    <p class=\"prg_info__note\"> {{ info.vote_average }} / 10</p>\n                    <div  :class=\"heart\" @click=\"$emit('toggleFav')\"></div>\n            </div>   \n        </div>"
 });
 app.component('prg-review', {
   props: ['review'],
@@ -153,20 +419,20 @@ app.component('carrousel-custom', {
   props: ['size', 'request', 'filter'],
   methods: {
     getData: function getData() {
-      var _this3 = this;
+      var _this5 = this;
 
       var url = api.base + this.request + api.key + this.filter;
       fetch(url).then(function (response) {
         return response.json();
       }).then(function (json) {
-        return _this3.results = json.results;
+        return _this5.results = json.results;
       });
     }
   },
   mounted: function mounted() {
     this.getData();
   },
-  template: "<div class=\"carrousel\" >\n            <carrousel-item @change-page=\"$emit('changePage',$event)\" class=\"carrousel__item\" v-for=\"result in results\" :result=\"result\" :size=\"size\" :key=\"result.id\"></carrousel-item>\n        </div>"
+  template: "<div class=\"carrousel\" >\n            <carrousel-item @change-page=\"$emit('changePage',$event)\" class=\"carrousel__item\" v-for=\"result in results\"  :result=\"result\" :size=\"size\" :key=\"result.id\"></carrousel-item>\n        </div>"
 });
 app.component('carrousel-item', {
   data: function data() {
@@ -190,7 +456,7 @@ app.component('carrousel-item', {
       this.show = this.show === true ? false : true;
     }
   },
-  template: "<div >\n            <img @click=\"toggleVisibility\" class=\"car_item__img\" :class=\"classSizeModifObj\" v-bind:src=\"picLowQual + result.poster_path\" >\n            <modal-custom @closeModal=\"toggleVisibility\" @change-page=\"$emit('changePage',$event)\" v-if=\"show\" :result=\"result\"></modal-custom>\n        </div>"
+  template: "<div v-if=\"result.poster_path !== null\" >\n            <img @click=\"toggleVisibility\" class=\"car_item__img\" :class=\"classSizeModifObj\" v-bind:src=\"picLowQual + result.poster_path\" >\n            <modal-custom @closeModal=\"toggleVisibility\" @change-page=\"$emit('changePage',$event)\" v-if=\"show\" :result=\"result\"></modal-custom>\n        </div>"
 });
 app.component('modal-custom', {
   data: function data() {

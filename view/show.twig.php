@@ -11,12 +11,16 @@
     <input type="hidden" name="type" value={{type}}>
     <input type="hidden" name="id" value={{id}}>
 </form>
-<prg-overview :info="overview"></prg-overview>
+<prg-overview :info="overview" :fav="fav" @toggle-fav="toggleFav()"></prg-overview>
 <details>
     <summary>Reviews</summary>
     <div class="prg-reviews">
         <prg-review v-for="(review, index) in reviews.results" :review="review" :key="index"></prg-review>
         <prg-review v-for="(review, index) in commentarySql" :review="review" :key="index"></prg-review>
+        <section id='writeComment_section'>
+            <label for='writeComment'>Ecrire un nouveau commentaire</label>
+            <textarea id='writeComment' name='writeComment'></textarea>
+        </section>
     </div>
 </details>
 <details>

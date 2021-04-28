@@ -6,11 +6,13 @@
 
 {% block content %}
 {{ parent() }}
-
 <h1>Hello {{ name }} ! </h1>
-<carrousel-custom @change-page="changePage($event)" size="small" request="/discover/movie" filter="&sort_by=popularity.desc"></carrousel-custom>
+<h2>Good movies!</h2>
+<carrousel-custom @change-page="changePage($event)" size="medium" request="/discover/movie" filter="&sort_by=popularity.desc"></carrousel-custom>
+<h2>News movies!</h2>
+<carrousel-custom @change-page="changePage($event)" size="medium" request="/discover/movie" filter="&sort_by=release_date.desc"></carrousel-custom>
+<h2>Old movies!</h2>
 <carrousel-custom @change-page="changePage($event)" size="medium" request="/discover/movie" filter="&sort_by=release_date.asc"></carrousel-custom>
-<carrousel-custom @change-page="changePage($event)" size="big" request="/discover/tv" filter="&sort_by=popularity.desc"></carrousel-custom>
 {% endblock %}
 
 {% block script %}

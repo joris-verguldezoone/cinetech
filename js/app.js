@@ -6,7 +6,11 @@ const app = Vue.createApp({
             credits: {},
             reviews: {},
             overview: {},
-            commentarySql: {}
+            commentarySql: {},
+            favMovies: false,
+            favTv: false,
+            apiSession: {},
+            fav: ''
         }
     },
     computed: {
@@ -18,9 +22,18 @@ const app = Vue.createApp({
         id: function () {
             this.get('credits')
             this.get('reviews')
-
             this.get('overview')
             this.getReviewSql();
+        },
+        favTv: function () {
+            if ((this.favMovies && this.favTv)) {
+                this.fav = this.isFav()
+            }
+        },
+        favMovies: function () {
+            if ((this.favMovies && this.favTv)) {
+                this.fav = this.isFav()
+            }
         },
         overview: function () {
             this.overview.title = typeof this.overview.title !== 'undefined' ? this.overview.title : this.overview.name
@@ -43,7 +56,6 @@ const app = Vue.createApp({
             let urlRequest = api.base + '/' + this.type + '/' + this.id + '/' + info + api.key
             urlRequest = (info == 'overview') ? api.base + '/' + this.type + '/' + this.id + api.key : urlRequest
             this.getRequestApi(urlRequest, info)
-
         },
         getRequestApi: function (urlRequest, store) {
             fetch(urlRequest)
@@ -58,12 +70,135 @@ const app = Vue.createApp({
         getReviewReplySql: function () {
             let url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id
             fetch(url).then(response => response.json()).then(json => this['commentarySql'] = json)
+                .then(json => {
+                    this[store] = json
+                })
+        },
+        apiConnect: async function () {
+            let urlRequest = api.base + '/authentication/token/new' + api.key
+            let token = await fetch(urlRequest).then(response => response.json())
+            if (!token.success) {
+                console.log('Token request failed', token)
+                return
+            } else {
+                urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set'
+                reponse = await this.postFormData(urlRequest, { "token": token.request_token })
+                console.log(reponse)
+            }
+            urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
+            window.location.assign(urlRequest)
+        },
+        getSession: async function () {
+            let urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/get'
+            let session = await fetch(urlRequest).then(reponse => reponse.json())
+            if (session.session.api_session.length > 0) {
+                this.apiSession.session_id = session.session.api_session
+                this.getFav()
+                console.log('Session already started', session)
+                return
+            }
+
+
+            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get'
+            let token = await fetch(urlRequest).then(reponse => reponse.json())
+            if (!token.success || token.token === "" || token.token === "undefined") {
+                return console.log('No token available', token)
+            }
+            urlRequest = 'https://api.themoviedb.org/3/authentication/session/new' + api.key + '&request_token=' + token.token
+            session = await fetch(urlRequest).then(reponse => reponse.json())
+            if (!session.success) {
+                return console.log('No session return by api', session)
+            }
+
+            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/set'
+            this.postFormData(urlRequest, { 'session': session.session_id })
+
+            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set'
+            reponse = this.postFormData(urlRequest, { "token": token.token })
+
+            this.getFav()
+        },
+        postFormData: async function (url, dataSet) {
+            let form = new FormData()
+            for (const key in dataSet) {
+                if (dataSet.hasOwnProperty.call(dataSet, key)) {
+                    const element = dataSet[key];
+                    form.append(key, element)
+                }
+            }
+            let response = await fetch(url, {
+                method: 'POST',
+                body: form
+            }).then(response => response.json())
+            return response
+        },
+        toggleFav: function () {
+            console.log('toggle')
+            this.setFav(this.type, this.id, !this.isFav())
+        },
+        getFav: async function (type) {
+            if (typeof this.apiSession.session_id === 'undefined') {
+                return
+            }
+
+            let urlRequest = api.base + '/account/%7Baccount_id%7D/favorite/movies' + api.key + '&session_id=' + this.apiSession.session_id + '&language=en-US&sort_by=created_at.asc&page=1'
+            this.getRequestApi(urlRequest, 'favMovies')
+
+            urlRequest = api.base + '/account/%7Baccount_id%7D/favorite/tv' + api.key + '&session_id=' + this.apiSession.session_id + '&language=en-US&sort_by=created_at.asc&page=1'
+            this.getRequestApi(urlRequest, 'favTv')
+        },
+        setFav: function (type, id, state) {
+            if (typeof this.apiSession.session_id === 'undefined') {
+                return
+            }
+            let urlRequest = api.base + '/account/%7Baccount_id%7D/favorite' + api.key + '&session_id=' + this.apiSession.session_id
+            let fav = {
+                "media_type": type,
+                "media_id": id,
+                "favorite": state
+            }
+            fetch(urlRequest, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(fav),
+                method: 'POST',
+            }).then(reponse => reponse.json()).then(json => {
+                console.log(json)
+                this.favMovies = false
+                this.favTv = false
+                this.getFav()
+            })
+        },
+        isFav: function () {
+            let isFav = false
+            if (this.type == 'movie') {
+                this.favMovies.results.forEach(fav => {
+                    if (fav.id == this.id) {
+                        isFav = true
+                    }
+                })
+            } else {
+                this.favTv.results.forEach(fav => {
+                    if (fav.id == this.id) {
+                        isFav = true
+                    }
+                })
+            }
+            return isFav
         }
 
     },
     mounted() {
         this.getPrgInfo()
+        this.getSession()
     }
+})
+
+app.component('api-connect', {
+    template:
+        `<button class='btn btn-primary' @click="$emit('apiConnect')">Connect</button>`
 })
 
 app.component('search-modul', {
@@ -71,14 +206,15 @@ app.component('search-modul', {
         return {
             query: '',
             dataList: {},
-            results: {}
+            results: {},
+            picLowQual: api.picLowQual
         }
     },
     props: ['keywords'],
     computed: {
         showResults() {
             return this.keywords.length > 0 ? true : false
-        }
+        },
     },
     watch: {
         query: function () {
@@ -110,6 +246,9 @@ app.component('search-modul', {
                 default:
                     break;
             }
+        },
+        showResult(result) {
+            return (result.media_type === 'tv' || result.media_type === 'movie') && result.poster_path !== null ? true : false;
         }
     },
     mounted() {
@@ -128,17 +267,22 @@ app.component('search-modul', {
                 <button class="btn btn-outline-danger" type="submit">Search</button>
             </form>
         </teleport>
-        <div v-if="showResults">
+        <div v-if="showResults" >
             <h2>Results for : {{keywords}}</h2>
-            <ul>
-                <li v-for="result in results.results">{{title(result)}}</li>
-            </ul>
+            <div class="result" @click="$emit('changePage',{page:result.media_type , id:result.id})" v-for="result in results.results">
+                    <div v-if="showResult(result)">
+                    <img class="result__img" v-bind:src="picLowQual + result.poster_path">
+                    <div class="result__content">
+                        <h3>{{title(result)}} <span class="result__type">type: {{result.media_type }}</span></h3> 
+                        <p>{{result.overview}}</p>
+                    </div>
+                    <div class="result__clear"></div>
+                    </div>
+            </div>
         </div>
     </div>
     `
 })
-
-
 
 app.component('prg-overview', {
     data() {
@@ -149,17 +293,27 @@ app.component('prg-overview', {
     computed: {
         img_path() {
             return (this.info.backdrop_path != null) ? this.info.backdrop_path : this.info.poster_path
+        },
+        heart() {
+            return {
+                'heart': this.fav !== '' ? true : false,
+                'heart--red': this.fav === true ? true : false,
+                'heart--black': this.fav === false ? true : false,
+            }
         }
     },
-    props: ["info"],
+    props: ["info", "fav"],
     template:
-        `<div class="prg_info">
-                <img class="prg_info__img" v-bind:src="picHighQual + img_path" >
-                <div class="prg_info__content">
-                    <h3 class="prg_info__title">{{ info.title }}</h3>  
-                    <p class="prg_info__overview">{{ info.overview }}</p>
-                </div>
-                <p class="prg_info__note"> {{ info.vote_average }} / 10</p>
+        `<div>
+            <div class="prg_info">
+                    <img class="prg_info__img" v-bind:src="picHighQual + img_path" >
+                    <div class="prg_info__content">
+                        <h3 class="prg_info__title">{{ info.title }}</h3>  
+                        <p class="prg_info__overview">{{ info.overview }}</p>
+                    </div>
+                    <p class="prg_info__note"> {{ info.vote_average }} / 10</p>
+                    <div  :class="heart" @click="$emit('toggleFav')"></div>
+            </div>   
         </div>`
 })
 
@@ -187,15 +341,19 @@ app.component('prg-review', {
             }
         },
         isApi() {
-            return (typeof this.review.author_details == 'undefined') ? false : true
+            return { 'summary_review_api': (typeof this.review.author_details == 'undefined') ? false : true }
         },
+        isReply() {
+            return { 'review_reply': (typeof this.review.author_details == 'undefined') && (typeof this.review.id_commentaire == 'undefined') ? true : false }
+
+        }
     },
 
     template:
-        `<details class="prg-review" >
-        <summary class="prg-review__summary">{{review.author}} <span class="prg-review__note">({{rating}})</span></summary>
+        `<details class="prg-review" :class='isReply'>
+        <summary  class="prg-review__summary" :class='isApi' :class='isReply'>{{review.author}} <span class="prg-review__note">({{rating}})</span></summary>
         <img class="prg-review__avatar" v-bind:src="imgAvatar">
-        <p class="prg-review__content"> {{review.content}}</p>
+        <p class="prg-review__content" > {{review.content}}</p>
         <div class="prg-review__clear"></div>
         
     </details>`
@@ -231,7 +389,7 @@ app.component('carrousel-custom', {
     },
     template:
         `<div class="carrousel" >
-            <carrousel-item @change-page="$emit('changePage',$event)" class="carrousel__item" v-for="result in results" :result="result" :size="size" :key="result.id"></carrousel-item>
+            <carrousel-item @change-page="$emit('changePage',$event)" class="carrousel__item" v-for="result in results"  :result="result" :size="size" :key="result.id"></carrousel-item>
         </div>`
 })
 
@@ -258,7 +416,7 @@ app.component('carrousel-item', {
         },
     },
     template:
-        `<div >
+        `<div v-if="result.poster_path !== null" >
             <img @click="toggleVisibility" class="car_item__img" :class="classSizeModifObj" v-bind:src="picLowQual + result.poster_path" >
             <modal-custom @closeModal="toggleVisibility" @change-page="$emit('changePage',$event)" v-if="show" :result="result"></modal-custom>
         </div>`
@@ -299,5 +457,6 @@ app.component('modal-custom', {
             </div>
         </div>`
 })
+
 
 const vm = app.mount('#app')

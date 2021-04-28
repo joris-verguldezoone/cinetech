@@ -1,10 +1,11 @@
-<?php 
+<?php
 
 namespace App\Model;
 
-class ReviewModel extends Model {
-
-    public function fetchReview_id_type($id,$type){
+class ReviewModel extends Model
+{
+    public function fetchReview_id_type($id, $type)
+    {
 
         $sql = "SELECT m.id as id_commentaire, u.login as author, m.date as created_at , u.image , m.commentary as content, m.id_program , m.type_program FROM user AS u 
         INNER JOIN movie_commentary AS m ON u.id = m.id_user WHERE m.type_program = :type AND id_program= :id";
@@ -60,5 +61,4 @@ class ReviewModel extends Model {
 
         return $fetch;
     }
-
 }
