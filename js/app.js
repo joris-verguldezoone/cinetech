@@ -192,7 +192,7 @@ app.component('prg-review', {
     },
 
     template:
-        `<details class="prg-review">
+        `<details class="prg-review" >
         <summary class="prg-review__summary">{{review.author}} <span class="prg-review__note">({{rating}})</span></summary>
         <img class="prg-review__avatar" v-bind:src="imgAvatar">
         <p class="prg-review__content"> {{review.content}}</p>

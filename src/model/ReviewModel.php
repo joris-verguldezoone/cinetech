@@ -6,7 +6,7 @@ class ReviewModel extends Model {
 
     public function fetchReview_id_type($id,$type){
 
-        $sql = "SELECT m.id as id_commentaire, u.login as author, m.date as created_at , u.image , m.commentary as content FROM user AS u 
+        $sql = "SELECT m.id as id_commentaire, u.login as author, m.date as created_at , u.image , m.commentary as content, m.id_program , m.type_program FROM user AS u 
         INNER JOIN movie_commentary AS m ON u.id = m.id_user WHERE m.type_program = :type AND id_program= :id";
         $result = $this->pdo->prepare($sql);
         $result->bindValue(':id',$id,\PDO::PARAM_INT);
@@ -14,9 +14,35 @@ class ReviewModel extends Model {
         $result->execute();
 
         $fetch = $result->fetchAll();
+        $fetch4 = $result->fetchAll();
         
 
-        return $fetch;
+        $ReviewModel = new \App\Model\ReviewModel();
+        $tab = array();
+        $i = 0;
+        foreach($fetch as $value){
+            // $fetch[$i] = json_encode($fetch[$i]);
+            array_push($tab, $fetch[$i]);
+            $fetch2 = $ReviewModel->fetchReview_id_review_reply($fetch[$i]['id_program'],$fetch[$i]['type_program'],$fetch[$i]['id_commentaire']);
+            for($e = 0 ; $e < count($fetch2); $e++){
+
+                // $fetch2[$e] = json_encode($fetch2[$e]);
+                array_push($tab, $fetch2[$e]);
+            }
+            
+                
+                
+                // array_push($fetch, $fetch2);
+                
+                $i++;
+            }
+            // $i = 0;
+        
+        // $fetch = json_encode($fetch);
+        // $tab = json_encode($fetch2);
+        // $tabResult = $fetch . $tab;
+        
+        return $tab;
 
     }
     public function fetchReview_id_review_reply($id,$type,$id_commentary){
@@ -31,7 +57,6 @@ class ReviewModel extends Model {
         $result->execute();
 
         $fetch = $result->fetchAll();
-
 
         return $fetch;
     }
