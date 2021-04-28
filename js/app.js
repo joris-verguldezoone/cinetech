@@ -280,6 +280,13 @@ app.component('prg-overview',{
     computed: {
         img_path() {
             return (this.info.backdrop_path != null) ? this.info.backdrop_path : this.info.poster_path
+        },
+        heart() {
+            return {
+                'heart': this.fav !== '' ? true : false,
+                'heart--red': this.fav === true ? true : false,
+                'heart--black': this.fav === false ? true : false,
+            }
         }
     },
     props : ["info","fav"],
@@ -292,11 +299,8 @@ app.component('prg-overview',{
                         <p class="prg_info__overview">{{ info.overview }}</p>
                     </div>
                     <p class="prg_info__note"> {{ info.vote_average }} / 10</p>
-                    
-            </div>
-            <button @click="$emit('toggleFav')">
-                {{ fav ? "is fav" : "not fav"}}
-            </button>
+                    <div  :class="heart" @click="$emit('toggleFav')"></div>
+            </div>   
         </div>`
 })
 
@@ -417,11 +421,5 @@ app.component('modal-custom', {
         </div>`
 })
 
-app.component('favorite-button',{
-    template:
-    `<div>
-        <button>{{ is-favorite }}</button>
-    </div>`
-})
 
 const vm = app.mount('#app')

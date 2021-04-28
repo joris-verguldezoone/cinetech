@@ -383,10 +383,17 @@ app.component('prg-overview', {
   computed: {
     img_path: function img_path() {
       return this.info.backdrop_path != null ? this.info.backdrop_path : this.info.poster_path;
+    },
+    heart: function heart() {
+      return {
+        'heart': this.fav !== '' ? true : false,
+        'heart--red': this.fav === true ? true : false,
+        'heart--black': this.fav === false ? true : false
+      };
     }
   },
   props: ["info", "fav"],
-  template: "<div>\n            <div class=\"prg_info\">\n                    <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                    <div class=\"prg_info__content\">\n                        <h3 class=\"prg_info__title\">{{ info.title }}</h3>  \n                        <p class=\"prg_info__overview\">{{ info.overview }}</p>\n                    </div>\n                    <p class=\"prg_info__note\"> {{ info.vote_average }} / 10</p>\n                    \n            </div>\n            <button @click=\"$emit('toggleFav')\">\n                {{ fav ? \"is fav\" : \"not fav\"}}\n            </button>\n        </div>"
+  template: "<div>\n            <div class=\"prg_info\">\n                    <img class=\"prg_info__img\" v-bind:src=\"picHighQual + img_path\" >\n                    <div class=\"prg_info__content\">\n                        <h3 class=\"prg_info__title\">{{ info.title }}</h3>  \n                        <p class=\"prg_info__overview\">{{ info.overview }}</p>\n                    </div>\n                    <p class=\"prg_info__note\"> {{ info.vote_average }} / 10</p>\n                    <div  :class=\"heart\" @click=\"$emit('toggleFav')\"></div>\n            </div>   \n        </div>"
 });
 app.component('prg-review', {
   props: ['review'],
@@ -475,8 +482,5 @@ app.component('modal-custom', {
     this.titleHandeling();
   },
   template: "<div class=\"modal\">\n            <button @click=\"$emit('closeModal')\" class=\"modal__close_btn\">X</button>\n            <img class=\"modal__photo\" v-bind:src=\"picHighQual + img_path\" >\n            <div class=\"modal__content\">\n                <h3>{{ result.title }}</h3>\n                <p>Overview : {{ result.overview }}</p>\n                <p>Vote : {{ result.vote_average }}</p>\n                <button @click=\"$emit('changePage', { page : type, id : id })\">More information</button>\n            </div>\n        </div>"
-});
-app.component('favorite-button', {
-  template: "<div>\n        <button>{{ is-favorite }}</button>\n    </div>"
 });
 var vm = app.mount('#app');
