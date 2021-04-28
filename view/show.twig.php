@@ -16,6 +16,7 @@
     <summary>Reviews</summary>
     <div class="prg-reviews">
         <prg-review v-for="(review, index) in reviews.results" :review="review" :key="index"></prg-review>
+        <prg-review v-for="(review, index) in commentarySql" :review="review" :key="index"></prg-review>
     </div>
 </details>
 <details>

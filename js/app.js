@@ -1,110 +1,124 @@
 const app = Vue.createApp({
-    data(){
-        return{
-            type:'',
-            id:0,
-            credits:{},
-            reviews:{},
-            overview:{}
+    data() {
+        return {
+            type: '',
+            id: 0,
+            credits: {},
+            reviews: {},
+            overview: {},
+            commentarySql: {}
         }
     },
     computed: {
-        basePath(){
+        basePath() {
             return document.querySelector('#conf>input[name=base_path]').getAttribute('value')
         }
     },
     watch: {
-        id: function () { 
+        id: function () {
             this.get('credits')
             this.get('reviews')
+
             this.get('overview')
+            this.getReviewSql();
         },
-        overview : function(){
+        overview: function () {
             this.overview.title = typeof this.overview.title !== 'undefined' ? this.overview.title : this.overview.name
         }
     },
-    methods : {
+    methods: {
         changePage: function (obj) {
-            
-            let param = typeof obj.id === 'undefined' ? obj.keyword : obj.id 
-            let url = this.basePath +'/' +obj.page + '/' + param
+
+            let param = typeof obj.id === 'undefined' ? obj.keyword : obj.id
+            let url = this.basePath + '/' + obj.page + '/' + param
             window.location.assign(encodeURI(url))
         },
-        getPrgInfo: function(){
-            if(document.querySelector('#prg-info > input[name=type]') !== null){
-                this.type= document.querySelector('#prg-info > input[name=type]').getAttribute('value')
-                this.id= document.querySelector('#prg-info > input[name=id]').getAttribute('value')
+        getPrgInfo: function () {
+            if (document.querySelector('#prg-info > input[name=type]') !== null) {
+                this.type = document.querySelector('#prg-info > input[name=type]').getAttribute('value')
+                this.id = document.querySelector('#prg-info > input[name=id]').getAttribute('value')
             }
         },
         get: function (info) {
-            let urlRequest = api.base +'/'+this.type+'/'+ this.id+ '/' + info +api.key
-            urlRequest = (info == 'overview') ? api.base +'/'+this.type+'/'+ this.id +api.key : urlRequest
-            this.getRequestApi(urlRequest,info)
+            let urlRequest = api.base + '/' + this.type + '/' + this.id + '/' + info + api.key
+            urlRequest = (info == 'overview') ? api.base + '/' + this.type + '/' + this.id + api.key : urlRequest
+            this.getRequestApi(urlRequest, info)
+
         },
-        getRequestApi: function(urlRequest,store){
+        getRequestApi: function (urlRequest, store) {
             fetch(urlRequest)
                 .then(response => response.json())
                 .then(json => this[store] = json)
+
+        },
+        getReviewSql: function () {
+            let url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id
+            fetch(url).then(response => response.json()).then(json => this['commentarySql'] = json)
+        },
+        getReviewReplySql: function () {
+            let url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id
+            fetch(url).then(response => response.json()).then(json => this['commentarySql'] = json)
         }
+
     },
-    mounted(){
+    mounted() {
         this.getPrgInfo()
     }
 })
 
-app.component('search-modul',{
-    data(){
+app.component('search-modul', {
+    data() {
         return {
-            query:'',
-            dataList : {},
-            results : {}
+            query: '',
+            dataList: {},
+            results: {}
         }
     },
-    props:['keywords'],
-    computed:{
+    props: ['keywords'],
+    computed: {
         showResults() {
             return this.keywords.length > 0 ? true : false
         }
     },
-    watch:{
-        query : function(){
+    watch: {
+        query: function () {
             this.getDataList()
         }
     },
-    methods:{
-        getDataList : function(){
-            let urlRequest = api.base +'/'+'search/multi' +api.key +'&query='+this.query
-            this.getRequestApi(urlRequest,'dataList')
+    methods: {
+        getDataList: function () {
+            let urlRequest = api.base + '/' + 'search/multi' + api.key + '&query=' + this.query
+            this.getRequestApi(urlRequest, 'dataList')
         },
-        getResults : function(){
-            let urlRequest = api.base +'/'+'search/multi' +api.key +'&query='+this.keywords
-            this.getRequestApi(urlRequest,'results')
+        getResults: function () {
+            let urlRequest = api.base + '/' + 'search/multi' + api.key + '&query=' + this.keywords
+            this.getRequestApi(urlRequest, 'results')
         },
-        getRequestApi: function(urlRequest,store){
+        getRequestApi: function (urlRequest, store) {
             fetch(urlRequest)
                 .then(response => response.json())
                 .then(json => this[store] = json)
         },
-        title : function(data){
+        title: function (data) {
             switch (data.media_type) {
                 case 'movie':
                     return data.title
                     break;
                 case 'tv':
                     return data.name
-                    break;    
+                    break;
                 default:
                     break;
             }
         }
     },
-    mounted(){
-        if(this.showResults){
-          this.getResults()
+    mounted() {
+        if (this.showResults) {
+            this.getResults()
         }
     },
     template:
-    `<div>
+        `<div>
         <teleport to="#searchBarPlaceHolder">
             <form @submit.prevent="$emit('changePage',{ page :'search', keyword:query})" class="d-flex">   
                 <input class="form-control me-2"  placeholder="Search" type="search" list="keywords" v-model="query" />
@@ -126,7 +140,7 @@ app.component('search-modul',{
 
 
 
-app.component('prg-overview',{
+app.component('prg-overview', {
     data() {
         return {
             picHighQual: api.picHighQual,
@@ -137,7 +151,7 @@ app.component('prg-overview',{
             return (this.info.backdrop_path != null) ? this.info.backdrop_path : this.info.poster_path
         }
     },
-    props : ["info"],
+    props: ["info"],
     template:
         `<div class="prg_info">
                 <img class="prg_info__img" v-bind:src="picHighQual + img_path" >
@@ -149,28 +163,48 @@ app.component('prg-overview',{
         </div>`
 })
 
-app.component('prg-review',{
-    props:['review'],
+app.component('prg-review', {
+
+    props: ['review'],
     computed: {
-        imgAvatar(){
+
+        imgAvatar() {
             let nonePicPath = 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp'
-            let picPath =  this.review.author_details.avatar_path === null ? nonePicPath : this.review.author_details.avatar_path.substring(1)
-            return picPath.match(/^http/gmi) ? picPath : api.picLowQual + picPath       
-        }
+
+            if (typeof this.review.author_details == 'undefined') {
+
+                return this.review.image
+            }
+
+            let picPath = this.review.author_details.avatar_path === null ? nonePicPath : this.review.author_details.avatar_path.substring(1)
+            return picPath.match(/^http/gmi) ? picPath : api.picLowQual + picPath
+        },
+        rating() {
+            if (typeof this.review.author_details != 'undefined')
+                return this.review.author_details.rating + '/10'
+            else {
+                return ""
+            }
+        },
+        isApi() {
+            return (typeof this.review.author_details == 'undefined') ? false : true
+        },
     },
-    template: 
-    `<details class="prg-review">
-        <summary class="prg-review__summary">{{review.author}} <span class="prg-review__note">({{review.author_details.rating}}/10)</span></summary>
+
+    template:
+        `<details class="prg-review">
+        <summary class="prg-review__summary">{{review.author}} <span class="prg-review__note">({{rating}})</span></summary>
         <img class="prg-review__avatar" v-bind:src="imgAvatar">
         <p class="prg-review__content"> {{review.content}}</p>
         <div class="prg-review__clear"></div>
+        
     </details>`
 })
 
 app.component('prg-casting', {
     props: ['actor'],
-    template: 
-    `<div class="prg-actor">
+    template:
+        `<div class="prg-actor">
         <img v-if="actor.profile_path" class="prg-actor__img" v-bind:src="\'https://image.tmdb.org/t/p/w500//\'+ actor.profile_path">
         <img v-else class="prg-actor__img" height="400" width="200" src="https://pukt.pl/wp-content/uploads/2019/12/YPS__human_avatar_portrait_photography_picture_photo-512-300x300.png">
         <p class="prg-actor__name">{{actor.name}} as {{actor.character}}</p>

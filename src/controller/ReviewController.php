@@ -11,8 +11,17 @@ class ReviewController extends Controller{
     public function get($request, $response, $args)
     {
         $ReviewModel = new \App\Model\ReviewModel();
-        $result = $ReviewModel->fetchReview_id_type(550, 'movie');
+        $result = $ReviewModel->fetchReview_id_type($args['id'], $args['type']);
         
+        foreach($result['id_commentary'] as $value){
+            fetchReview_id_review_reply($args['id'], $args['type'], $result['id_commentary']);
+            $result = json_encode($result);
+
+            $response->withHeader('Content-Type', 'application/json');
+
+            $response->getBody()->write($result); // write json encodé
+        }
+
         $result = json_encode($result);
 
         $response->getBody()->write($result); // write json encodé
