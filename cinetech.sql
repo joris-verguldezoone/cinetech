@@ -81,6 +81,8 @@ CREATE TABLE IF NOT EXISTS `movie_commentary_reply` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+
+
 -- --------------------------------------------------------
 
 --
@@ -108,6 +110,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `image` varchar(800) NOT NULL,
+  `api_token` varchar(300) DEFAULT NULL,
+  `api_session` varchar(300) DEFAULT NULL
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
