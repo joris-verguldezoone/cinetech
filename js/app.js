@@ -345,6 +345,8 @@ app.component('prg-review', {
         },
         isReply() {
             return { 'review_reply': (typeof this.review.author_details == 'undefined') && (typeof this.review.id_commentaire == 'undefined') ? true : false }
+        },
+        writeComment() {
 
         }
     },
