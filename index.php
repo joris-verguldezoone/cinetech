@@ -29,6 +29,7 @@ $app = AppFactory::create();
 
 // Adapt rooter to sub directory
 define('BASE_PATH', rtrim(dirname($_SERVER["SCRIPT_NAME"]), '/'));
+define('HTTP_HOST', $_SERVER["HTTP_HOST"]);
 $app->setBasePath(BASE_PATH);
 
 
