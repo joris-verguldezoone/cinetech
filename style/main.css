@@ -100,6 +100,15 @@ html, body, #app {
   transition: background-color 0.35s ease-out;
 }
 
+@media (max-width: 1000px) {
+  .modal {
+    flex-direction: column;
+  }
+  .modal__photo {
+    height: 40vh;
+    width: 100%;
+  }
+}
 .prg_info {
   position: relative;
   margin: 0 auto;

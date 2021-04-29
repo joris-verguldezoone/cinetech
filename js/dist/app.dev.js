@@ -21,6 +21,15 @@ var app = Vue.createApp({
     },
     httpHost: function httpHost() {
       return 'http://' + document.querySelector('#conf>input[name=http_host]').getAttribute('value');
+    },
+    emptyFavorite: function emptyFavorite() {
+      var areEmpty = true;
+
+      if (this.favMovies && this.favTv) {
+        areEmpty = (this.favMovies.results.length > 0 || this.favTv.results.length) > 0 ? false : true;
+      }
+
+      return areEmpty;
     }
   },
   watch: {
