@@ -10,7 +10,7 @@ class HomeController extends Controller
     public function main(Request $request, Response $response, $args)
     {
         $this->preloadTwig();
-        $response->getBody()->write($this->twig->render('home.twig.php', ["BASE_PATH" => BASE_PATH, "HTTP_HOST" => HTTP_HOST]));
+        $response->getBody()->write($this->twig->render('home.twig.php'));
         return $response;
     }
     public function getInscription(Request $request, Response $response, $args)
