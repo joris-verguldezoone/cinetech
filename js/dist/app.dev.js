@@ -127,7 +127,7 @@ var app = Vue.createApp({
               console.log(reponse);
 
             case 14:
-              urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://' + this.httpHost + this.basePath;
+              urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=' + this.httpHost + this.basePath;
               window.location.assign(urlRequest);
 
             case 16:
@@ -450,9 +450,15 @@ app.component('prg-review', {
         'review_reply': typeof this.review.author_details == 'undefined' && typeof this.review.id_commentaire == 'undefined' ? true : false
       };
     },
-    writeComment: function writeComment() {}
+    isReply_input: function isReply_input() {
+      if (typeof this.review.author_details == 'undefined' && typeof this.review.id_commentaire !== 'undefined') {
+        return true;
+      } else {
+        return false;
+      }
+    }
   },
-  template: "<details class=\"prg-review\" :class='isReply'>\n        <summary  class=\"prg-review__summary\" :class='isApi' :class='isReply'>{{review.author}} <span class=\"prg-review__note\">({{rating}})</span></summary>\n        <img class=\"prg-review__avatar\" v-bind:src=\"imgAvatar\">\n        <p class=\"prg-review__content\" > {{review.content}}</p>\n        <div class=\"prg-review__clear\"></div>\n        \n    </details>"
+  template: "<details class=\"prg-review\" :class='isReply'>\n        \n        <summary  class=\"prg-review__summary\" :class='isApi'  :class='isReply'>{{review.author}} <span class=\"prg-review__note\">({{rating}})</span><button type=\"button\" v-if='isReply_input' :value=\"review.id_commentaire\">Repondre</button></summary>\n        \n        <img class=\"prg-review__avatar\" v-bind:src=\"imgAvatar\">\n\n        <p class=\"prg-review__content\" > {{review.content}}</p>\n        <div class=\"prg-review__clear\"></div>\n        \n    </details>"
 });
 app.component('prg-casting', {
   props: ['actor'],

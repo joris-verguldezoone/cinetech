@@ -88,7 +88,7 @@ const app = Vue.createApp({
                 reponse = await this.postFormData(urlRequest, { "token": token.request_token })
                 console.log(reponse)
             }
-            urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://' + this.httpHost + this.basePath;
+            urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=' + this.httpHost + this.basePath;
             window.location.assign(urlRequest)
         },
         getSession: async function () {
