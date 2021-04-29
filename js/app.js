@@ -348,15 +348,23 @@ app.component('prg-review', {
         isReply() {
             return { 'review_reply': (typeof this.review.author_details == 'undefined') && (typeof this.review.id_commentaire == 'undefined') ? true : false }
         },
-        writeComment() {
-
-        }
+        isReply_input() {
+            if ((typeof this.review.author_details == 'undefined') && (typeof this.review.id_commentaire !== 'undefined')) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },
     },
 
     template:
         `<details class="prg-review" :class='isReply'>
-        <summary  class="prg-review__summary" :class='isApi' :class='isReply'>{{review.author}} <span class="prg-review__note">({{rating}})</span></summary>
+        
+        <summary  class="prg-review__summary" :class='isApi'  :class='isReply'>{{review.author}} <span class="prg-review__note">({{rating}})</span><button type="button" v-if='isReply_input' :value="review.id_commentaire">Repondre</button></summary>
+        
         <img class="prg-review__avatar" v-bind:src="imgAvatar">
+
         <p class="prg-review__content" > {{review.content}}</p>
         <div class="prg-review__clear"></div>
         
@@ -462,15 +470,15 @@ app.component('modal-custom', {
         </div>`
 })
 
-app.component('favorite-list',{
+app.component('favorite-list', {
     data() {
         return {
             picLowQual: api.picLowQual,
         }
     },
-    props:['favList'],
-    methods:{
-        type(result){
+    props: ['favList'],
+    methods: {
+        type(result) {
             return typeof result.title !== 'undefined' ? 'movie' : 'tv'
         },
         title(result) {
@@ -478,7 +486,7 @@ app.component('favorite-list',{
         }
     },
     template:
-    `
+        `
     <div class="result" @click="$emit('changePage',{page: type(result) , id:result.id})" v-for="result in favList.results">
         <img class="result__img" v-bind:src="picLowQual + result.poster_path">
         <div class="result__content">

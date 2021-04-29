@@ -20,44 +20,36 @@ class ReviewController extends Controller{
 
         return $response->withHeader('Content-Type', 'application/json');
     }
+    
 
+    public function add($request, $response, $args){
 
-    public function writeCommentary($id_utilisateur, $commentaire, $id_article){
+        $modelReview = new \Models\Admin(); // on pourrait appeler n'importe laquelle
+        $id_user = $modelReview->secure($id_user);
+        $commentary = $modelReview->secure($commentary);
+        $id_comment = $modelReview->secure($id_comment);
+        $id_program = $modelReview->secure($id_article);        
+        $type_program = $modelReview->secure($type_program);
 
-        $modelTools = new \Models\Admin(); // on pourrait appeler n'importe laquelle
-        $id_utilisateur = $modelTools->secure($id_utilisateur);
-        $commentaire = $modelTools->secure($commentaire);
-        $id_article = $modelTools->secure($id_article);
-        
         $errorLog = "";
 
-        if(!empty($id_utilisateur) && !empty($commentaire) && !empty($id_article)){
-            $commentaire_len = strlen($commentaire);
-            if($commentaire_len <500){
+        if(!empty($id_utilisateur) && !empty($commentaire) && !empty($id_program) && !empty($type_program)){
+            $commentary_len = strlen($commentary);
+            if($commentary_len <1000){
+                if($id_comment !== NULL){
+                    $modelCommentaire = new \Models\Commentaire();
+                    $modelCommentaire->insertReply($id_user, $commentary, $id_program, $type_program, $id_comment);
+                }
+                else{
+                    $modelCommentaire = new \Models\Commentaire();
+                    $modelCommentaire->insertComment($id_user, $commentary, $id_program, $type_program);
 
-                $modelCommentaire = new \Models\Commentaire();
-                $modelCommentaire->insertComment($id_utilisateur, $commentaire, $id_article);
-            }else $errorLog = "La limite de caractere est fixée a 500";
+                }
+
+            }else $errorLog = "La limite de caractere est fixée a 1000";
 
         }else $errorLog = "Veuillez entrer des caracteres dans les champs";
         
         echo $errorLog;
-    }
-    
-    public function commentDisplay($id_article){
-
-        $commentModel = new \Models\Commentaire();
-        $tab = $commentModel->commentDisplay($id_article);
-        $i = 0;
-        foreach($tab as $value)
-        {
-            echo "<hr id='trait_commentaire'>";
-            echo "<div id='bloc_commentaire'><div id='pseudo'><u>".$tab[$i][0]."</u></div><br/>"
-                    .$tab[$i][1]."<br/>"
-                    . "<div id='margin_date'>" .$tab[$i][3]."</div>"
-                    . "<div id='font_date'>" .$tab[$i][2]."<br/></div></div>";
-                    $i++;
-                    echo "</br>";
-        } //login commentaire droit date
     }
 }
