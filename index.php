@@ -56,6 +56,9 @@ $app->map(['GET', 'POST'], '/inscription', HomeController::class . ':getInscript
 
 $app->map(['GET', 'POST'], '/connexion', HomeController::class . ':getConnexion');
 
+$app->get('/log-out', HomeController::class . ':logOut');
+
+
 $app->map(['GET', 'POST'], '/profil', HomeController::class . ':getProfil');
 
 $app->map(['GET', 'POST'], '/review/{type}/{id}', ReviewController::class . ':get');

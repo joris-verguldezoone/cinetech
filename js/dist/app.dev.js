@@ -127,7 +127,7 @@ var app = Vue.createApp({
               console.log(reponse);
 
             case 14:
-              urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
+              urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://' + this.httpHost + this.basePath;
               window.location.assign(urlRequest);
 
             case 16:
@@ -336,7 +336,7 @@ var app = Vue.createApp({
   }
 });
 app.component('api-connect', {
-  template: "<button class='btn btn-primary' @click=\"$emit('apiConnect')\">Connect</button>"
+  template: "<button class='btn btn-primary' @click=\"$emit('apiConnect')\">Connect Api</button>"
 });
 app.component('search-modul', {
   data: function data() {

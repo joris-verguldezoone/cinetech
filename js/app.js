@@ -88,7 +88,7 @@ const app = Vue.createApp({
                 reponse = await this.postFormData(urlRequest,{"token":token.request_token})
                 console.log(reponse)
             }
-            urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://127.0.0.1:8888' + this.basePath;
+            urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://' + this.httpHost + this.basePath;
             window.location.assign(urlRequest)
         },
         getSession: async function(){
@@ -101,7 +101,6 @@ const app = Vue.createApp({
                 return
             }
 
-
             urlRequest = this.httpHost + this.basePath + '/token/get'
             let token = await fetch(urlRequest).then(reponse => reponse.json())
             if (!token.success || token.token === "" || token.token === "undefined") {
@@ -111,7 +110,7 @@ const app = Vue.createApp({
             session = await fetch(urlRequest).then(reponse => reponse.json())
             if (!session.success) {
                 return console.log('No session return by api', session)
-            }
+            } 
 
             urlRequest = this.httpHost + this.basePath + '/session/set'
             this.postFormData(urlRequest,{'session':session.session_id})
@@ -201,7 +200,7 @@ const app = Vue.createApp({
 
 app.component('api-connect', {
     template:
-        `<button class='btn btn-primary' @click="$emit('apiConnect')">Connect</button>`
+        `<button class='btn btn-primary' @click="$emit('apiConnect')">Connect Api</button>`
 })
 
 app.component('search-modul', {

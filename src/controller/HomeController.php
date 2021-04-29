@@ -76,6 +76,13 @@ class HomeController extends Controller
 
         return $response;
     }
+    public function logOut(Request $request, Response $response, $args)
+    {
+        session_destroy();
+        return $response
+            ->withHeader('Location', 'http://' . HTTP_HOST . BASE_PATH)
+            ->withStatus(302);
+    }
     public function getProfil(Request $request, Response $response, $args)
     {
         $method = $request->getMethod();
