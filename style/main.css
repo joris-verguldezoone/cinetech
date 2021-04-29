@@ -286,3 +286,14 @@ summary > button{
     background-color: teal;
     color: white;
 }
+#submit_comment{
+  width:30%;
+  border-radius: 0.5em;
+    background-color: teal;
+    color: white;
+    margin-left:30%;
+    margin-top: 1%;
+}
+.date_format{
+  font-size: 0.8em;
+}

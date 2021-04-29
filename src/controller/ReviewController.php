@@ -23,26 +23,27 @@ class ReviewController extends Controller{
     
 
     public function add($request, $response, $args){
-
-        $modelReview = new \Models\Admin(); // on pourrait appeler n'importe laquelle
-        $id_user = $modelReview->secure($id_user);
-        $commentary = $modelReview->secure($commentary);
-        $id_comment = $modelReview->secure($id_comment);
-        $id_program = $modelReview->secure($id_article);        
-        $type_program = $modelReview->secure($type_program);
+        var_dump($args);
+        var_dump($_POST);
+        $controllerReview = new \App\controller\ReviewController();
+        $modelReview = new \App\Model\ReviewModel(); // on pourrait appeler n'importe laquelle
+        $id_user = $controllerReview->secure($_SESSION['user']['id']);
+        $commentary = $controllerReview->secure($_POST['commentary']); // args['qqchose']
+        $id_comment = $controllerReview->secure($_POST['replyComment']);
+        $id_program = $controllerReview->secure($args['id']);        
+        $type_program = $controllerReview->secure($args['type']);
 
         $errorLog = "";
 
-        if(!empty($id_utilisateur) && !empty($commentaire) && !empty($id_program) && !empty($type_program)){
+        if(!empty($id_user) && !empty($commentary) && !empty($id_program) && !empty($type_program)){
             $commentary_len = strlen($commentary);
             if($commentary_len <1000){
-                if($id_comment !== NULL){
-                    $modelCommentaire = new \Models\Commentaire();
-                    $modelCommentaire->insertReply($id_user, $commentary, $id_program, $type_program, $id_comment);
+                if($id_comment !== ""){
+                    $modelReview->insertReply($id_user, $commentary, $id_program, $type_program, $id_comment);
                 }
                 else{
-                    $modelCommentaire = new \Models\Commentaire();
-                    $modelCommentaire->insertComment($id_user, $commentary, $id_program, $type_program);
+                    $modelReview->insertComment($id_user, $commentary, $id_program, $type_program);
+                    var_dump('yesyesyes');
 
                 }
 

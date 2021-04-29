@@ -10,7 +10,8 @@ const app = Vue.createApp({
             favMovies: false,
             favTv: false,
             apiSession: {},
-            fav: ''
+            fav: '',
+            replyComment: "",
         }
     },
     computed: {
@@ -110,7 +111,7 @@ const app = Vue.createApp({
             session = await fetch(urlRequest).then(reponse => reponse.json())
             if (!session.success) {
                 return console.log('No session return by api', session)
-            } 
+            }
 
             urlRequest = this.httpHost + this.basePath + '/session/set'
             this.postFormData(urlRequest, { 'session': session.session_id })
@@ -189,7 +190,19 @@ const app = Vue.createApp({
                 })
             }
             return isFav
+        },
+        addReply(event) {
+            this.replyComment = event.id_comment;
+            console.log(this.replyComment)
+        },
+        addComment: async function () {
+            console.log(this.replyComment)
+            let urlRequest = this.basePath + '/review/new/' + this.type + "/" + this.id
+            let commentary = document.querySelector('#writeComment').value
+            reponse = this.postFormData(urlRequest, { "replyComment": this.replyComment, "commentary": commentary })
+            console.log(reponse)
         }
+
 
     },
     mounted() {
@@ -358,23 +371,32 @@ app.component('prg-review', {
                 return false;
             }
         },
-    },
-    methods: {
-        addComment() {
+        dateFormat() {
+            if (typeof this.review.author_details == 'undefined') {
 
+                return this.review.created_at.substring(0, this.review.created_at.length - 3)
+            }
+            else {
+                return this.review.created_at.replace('T', ' ').substring(0, this.review.created_at.length - 8);
+
+            }
         }
+
     },
 
     template:
         `<details class="prg-review" :class='isReply'>
-        
-        <summary  class="prg-review__summary" :class='isApi'  :class='isReply'>{{review.author}} <span class="prg-review__note">({{rating}})</span><button type="button" v-if='isReply_input' :value="review.id_commentaire">Repondre</button></summary>
+            <summary  class="prg-review__summary" :class='isApi' :class='isReply'>{{review.author}} 
+                <span class="prg-review__note">({{rating}})</span>
+                <button type="button" v-if='isReply_input' @click='$emit("addReply",{id_comment : review.id_commentaire})' 
+                    :value="review.id_commentaire">Repondre
+                </button></summary>
         
         <img class="prg-review__avatar" v-bind:src="imgAvatar">
-
         <p class="prg-review__content" > {{review.content}}</p>
+        <span class="date_format">{{dateFormat}}</span>
+
         <div class="prg-review__clear"></div>
-        
     </details>`
 })
 

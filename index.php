@@ -16,7 +16,6 @@ require __DIR__ . '/vendor/autoload.php';
 
 session_start();
 
-
 spl_autoload_register(function ($className) {
     $className = str_replace('App', 'src', $className);
     $filePath =  str_replace('\\', '/', $className) . '.php';
@@ -64,6 +63,7 @@ $app->map(['GET', 'POST'], '/profil', HomeController::class . ':getProfil');
 $app->map(['GET', 'POST'], '/review/{type}/{id}', ReviewController::class . ':get');
 
 $app->post("/review/new/{type}/{id}", ReviewController::class .':add');
+
 
 $app->get('/token/get', TmdbapiController::class . ':getToken');
 

@@ -46,29 +46,29 @@ class ReviewModel extends Model
 
         return $fetch;
     }
-    public function insertReply($id_user, $commentary, $id_program, $type_program, $id_commentaire){
-        
+    public function insertReply($id_user, $reply, $id_program, $type_program, $id_commentary){
         $temps = time();
         $date = date('Y-m-d H:i', $temps);
         
-        $sql = "INSERT INTO movie_commentary (id_user, id_commentary, id_commentary, id_program, type_program , date) VALUES (:id_user,id_commentary, :commentary, :id_program, :type_program, :date)";
-        $resut = $this->pdo->prepare($sql);
+        $sql = "INSERT INTO movie_commentary_reply (id_user, id_commentary, reply, id_program, type_program , date) 
+        VALUES (:id_user, :id_commentary, :reply, :id_program, :type_program, :date)";
+        $result = $this->pdo->prepare($sql);
         $result->bindValue(':id_user',$id_user,\PDO::PARAM_INT);
-        $result->bindValue(':id_commentary',$commentary,\PDO::PARAM_INT);
-        $result->bindValue(':commentary',$commentary,\PDO::PARAM_STR);
+        $result->bindValue(':id_commentary',$id_commentary,\PDO::PARAM_INT);
+        $result->bindValue(':reply',$reply,\PDO::PARAM_STR);
         $result->bindValue(':id_program',$id_program,\PDO::PARAM_INT);
         $result->bindValue(':type_program',$type_program,\PDO::PARAM_STR);
         $result->bindValue(':date',$date,\PDO::PARAM_STR);
 
         $result->execute();
     }
-    public function insertComment($id_utilisateur, $commentaire, $id_program, $type_program){
+    public function insertComment($id_user, $commentary, $id_program, $type_program){
 
         $temps = time();
         $date = date('Y-m-d H:i', $temps);
 
         $sql = "INSERT INTO movie_commentary (id_user, commentary, id_program, type_program , date) VALUES (:id_user, :commentary, :id_program, :type_program, :date)";
-        $resut = $this->pdo->prepare($sql);
+        $result = $this->pdo->prepare($sql);
         $result->bindValue(':id_user',$id_user,\PDO::PARAM_INT);
         $result->bindValue(':commentary',$commentary,\PDO::PARAM_STR);
         $result->bindValue(':id_program',$id_program,\PDO::PARAM_INT);
