@@ -6,7 +6,7 @@
 
 {% block content %}
 {{ parent() }}
-<h1>Hello {{ name }} ! </h1>
+<h1>Hello {{ session.user.login }} ! </h1>
 <h2>Good series!</h2>
 <carrousel-custom @change-page="changePage($event)" size="medium" request="/discover/tv" filter="&sort_by=popularity.desc"></carrousel-custom>
 <h2>News series!</h2>
