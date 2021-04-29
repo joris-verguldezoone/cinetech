@@ -6,25 +6,30 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if not session.connected %}
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{BASE_PATH}}/connexion">Login</a>
+                    <a class="nav-link active" href="{{BASE_PATH}}/connexion">Log-in</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{BASE_PATH}}/inscription">Sign-up</a>
+                    <a class="nav-link" href="{{BASE_PATH}}/inscription">Sign-in</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link " href="{{BASE_PATH}}/profil">profil</a>
-                </li>
+                {% endif %}
+
                 <li class="nav-item">
                     <a class="nav-link" href="{{BASE_PATH}}/movies">Movies</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{BASE_PATH}}/tv">Tv</a>
                 </li>
-
+                {% if session.connected %}
+                <li class="nav-item">
+                    <a class="nav-link " href="{{BASE_PATH}}/profil">Profil</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link " href="{{BASE_PATH}}/favorite" tabindex="-1" aria-disabled="true">Favorite</a>
                 </li>
+                {% endif %}
+
             </ul>
             <div id="searchBarPlaceHolder"></div>
 

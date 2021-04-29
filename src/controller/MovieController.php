@@ -10,14 +10,14 @@ class MovieController extends Controller
     public function main(Request $request, Response $response, $args)
     {
         $this->preloadTwig();
-        $response->getBody()->write($this->twig->render('movies.twig.php', ["BASE_PATH" => BASE_PATH, "HTTP_HOST" => HTTP_HOST]));
+        $response->getBody()->write($this->twig->render('movies.twig.php'));
         return $response;
     }
 
     public function show(Request $request, Response $response, $args)
     {
         $this->preloadTwig();
-        $response->getBody()->write($this->twig->render('show.twig.php', ["BASE_PATH" => BASE_PATH,  "HTTP_HOST" => HTTP_HOST, "id" => $args["id"], "type" => 'movie']));
+        $response->getBody()->write($this->twig->render('show.twig.php', ["id" => $args["id"], "type" => 'movie']));
         return $response;
     }
 }

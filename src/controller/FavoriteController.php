@@ -10,7 +10,7 @@ class FavoriteController extends Controller
     public function main(Request $request, Response $response, $args)
     {
         $this->preloadTwig();
-        $response->getBody()->write($this->twig->render('favorite.twig.php', ["BASE_PATH" => BASE_PATH, "HTTP_HOST" => HTTP_HOST]));
+        $response->getBody()->write($this->twig->render('favorite.twig.php'));
         return $response;
     }
 }
