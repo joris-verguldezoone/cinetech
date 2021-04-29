@@ -360,6 +360,11 @@ app.component('prg-review', {
             }
         },
     },
+    methods: {
+        addComment() {
+
+        }
+    },
 
     template:
         `<details class="prg-review" :class='isReply'>
