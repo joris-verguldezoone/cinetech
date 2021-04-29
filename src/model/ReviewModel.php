@@ -15,34 +15,19 @@ class ReviewModel extends Model
         $result->execute();
 
         $fetch = $result->fetchAll();
-        $fetch4 = $result->fetchAll();
         
-
         $ReviewModel = new \App\Model\ReviewModel();
         $tab = array();
         $i = 0;
         foreach($fetch as $value){
-            // $fetch[$i] = json_encode($fetch[$i]);
             array_push($tab, $fetch[$i]);
             $fetch2 = $ReviewModel->fetchReview_id_review_reply($fetch[$i]['id_program'],$fetch[$i]['type_program'],$fetch[$i]['id_commentaire']);
             for($e = 0 ; $e < count($fetch2); $e++){
-
-                // $fetch2[$e] = json_encode($fetch2[$e]);
                 array_push($tab, $fetch2[$e]);
-            }
-            
-                
-                
-                // array_push($fetch, $fetch2);
-                
+            }                
                 $i++;
             }
-            // $i = 0;
-        
-        // $fetch = json_encode($fetch);
-        // $tab = json_encode($fetch2);
-        // $tabResult = $fetch . $tab;
-        
+
         return $tab;
 
     }
@@ -60,5 +45,36 @@ class ReviewModel extends Model
         $fetch = $result->fetchAll();
 
         return $fetch;
+    }
+    public function insertReply($id_user, $commentary, $id_program, $type_program, $id_commentaire){
+        
+        $temps = time();
+        $date = date('Y-m-d H:i', $temps);
+        
+        $sql = "INSERT INTO movie_commentary (id_user, id_commentary, id_commentary, id_program, type_program , date) VALUES (:id_user,id_commentary, :commentary, :id_program, :type_program, :date)";
+        $resut = $this->pdo->prepare($sql);
+        $result->bindValue(':id_user',$id_user,\PDO::PARAM_INT);
+        $result->bindValue(':id_commentary',$commentary,\PDO::PARAM_INT);
+        $result->bindValue(':commentary',$commentary,\PDO::PARAM_STR);
+        $result->bindValue(':id_program',$id_program,\PDO::PARAM_INT);
+        $result->bindValue(':type_program',$type_program,\PDO::PARAM_STR);
+        $result->bindValue(':date',$date,\PDO::PARAM_STR);
+
+        $result->execute();
+    }
+    public function insertComment($id_utilisateur, $commentaire, $id_program, $type_program){
+
+        $temps = time();
+        $date = date('Y-m-d H:i', $temps);
+
+        $sql = "INSERT INTO movie_commentary (id_user, commentary, id_program, type_program , date) VALUES (:id_user, :commentary, :id_program, :type_program, :date)";
+        $resut = $this->pdo->prepare($sql);
+        $result->bindValue(':id_user',$id_user,\PDO::PARAM_INT);
+        $result->bindValue(':commentary',$commentary,\PDO::PARAM_STR);
+        $result->bindValue(':id_program',$id_program,\PDO::PARAM_INT);
+        $result->bindValue(':type_program',$type_program,\PDO::PARAM_STR);
+        $result->bindValue(':date',$date,\PDO::PARAM_STR);
+
+        $result->execute();
     }
 }

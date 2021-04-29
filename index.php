@@ -63,6 +63,8 @@ $app->map(['GET', 'POST'], '/profil', HomeController::class . ':getProfil');
 
 $app->map(['GET', 'POST'], '/review/{type}/{id}', ReviewController::class . ':get');
 
+$app->post("/review/new/{type}/{id}", ReviewController::class .':add');
+
 $app->get('/token/get', TmdbapiController::class . ':getToken');
 
 $app->post('/token/set', TmdbapiController::class . ':setToken');

@@ -17,7 +17,7 @@ const app = Vue.createApp({
         basePath() {
             return document.querySelector('#conf>input[name=base_path]').getAttribute('value')
         },
-        httpHost(){
+        httpHost() {
             return 'http://' + document.querySelector('#conf>input[name=http_host]').getAttribute('value')
         }
     },
@@ -85,13 +85,13 @@ const app = Vue.createApp({
                 return
             } else {
                 urlRequest = this.httpHost + this.basePath + '/token/set'
-                reponse = await this.postFormData(urlRequest,{"token":token.request_token})
+                reponse = await this.postFormData(urlRequest, { "token": token.request_token })
                 console.log(reponse)
             }
             urlRequest = 'https://www.themoviedb.org/authenticate/' + token.request_token + '?redirect_to=http://' + this.httpHost + this.basePath;
             window.location.assign(urlRequest)
         },
-        getSession: async function(){
+        getSession: async function () {
             let urlRequest = this.httpHost + this.basePath + '/session/get'
             let session = await fetch(urlRequest).then(reponse => reponse.json())
             if (session.session.api_session.length > 0) {
@@ -113,10 +113,10 @@ const app = Vue.createApp({
             } 
 
             urlRequest = this.httpHost + this.basePath + '/session/set'
-            this.postFormData(urlRequest,{'session':session.session_id})
-            
+            this.postFormData(urlRequest, { 'session': session.session_id })
+
             urlRequest = this.httpHost + this.basePath + '/token/set'
-            reponse = this.postFormData(urlRequest,{"token":token.token})
+            reponse = this.postFormData(urlRequest, { "token": token.token })
 
             this.getFav()
         },
@@ -350,15 +350,23 @@ app.component('prg-review', {
         isReply() {
             return { 'review_reply': (typeof this.review.author_details == 'undefined') && (typeof this.review.id_commentaire == 'undefined') ? true : false }
         },
-        writeComment() {
-
-        }
+        isReply_input() {
+            if ((typeof this.review.author_details == 'undefined') && (typeof this.review.id_commentaire !== 'undefined')) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },
     },
 
     template:
         `<details class="prg-review" :class='isReply'>
-        <summary  class="prg-review__summary" :class='isApi' :class='isReply'>{{review.author}} <span class="prg-review__note">({{rating}})</span></summary>
+        
+        <summary  class="prg-review__summary" :class='isApi'  :class='isReply'>{{review.author}} <span class="prg-review__note">({{rating}})</span><button type="button" v-if='isReply_input' :value="review.id_commentaire">Repondre</button></summary>
+        
         <img class="prg-review__avatar" v-bind:src="imgAvatar">
+
         <p class="prg-review__content" > {{review.content}}</p>
         <div class="prg-review__clear"></div>
         
@@ -464,16 +472,16 @@ app.component('modal-custom', {
         </div>`
 })
 
-app.component('favorite-list',{
+app.component('favorite-list', {
     data() {
         return {
             picLowQual: api.picLowQual,
         }
     },
-    props:['favList'],
-    emits:['changePage'],
-    methods:{
-        type(result){
+    props: ['favList'],
+    emits: ['changePage'],
+    methods: {
+        type(result) {
             return typeof result.title !== 'undefined' ? 'movie' : 'tv'
         },
         title(result) {
@@ -481,7 +489,7 @@ app.component('favorite-list',{
         }
     },
     template:
-    `
+        `
     <div class="result" @click="$emit('changePage',{page: type(result) , id:result.id})" v-for="result in favList.results">
         <img class="result__img" v-bind:src="picLowQual + result.poster_path">
         <div class="result__content">
