@@ -1,19 +1,20 @@
 const app = Vue.createApp({
-    data(){
-        return{
-            type:'',
-            id:0,
-            credits:{},
-            reviews:{},
-            overview:{},
-            favMovies:false,
-            favTv:false,
-            apiSession:{},
-            fav:''
+    data() {
+        return {
+            type: '',
+            id: 0,
+            credits: {},
+            reviews: {},
+            overview: {},
+            commentarySql: {},
+            favMovies: false,
+            favTv: false,
+            apiSession: {},
+            fav: ''
         }
     },
     computed: {
-        basePath(){
+        basePath() {
             return document.querySelector('#conf>input[name=base_path]').getAttribute('value')
         },
         httpHost(){
@@ -21,55 +22,66 @@ const app = Vue.createApp({
         }
     },
     watch: {
-        id: function () { 
+        id: function () {
             this.get('credits')
             this.get('reviews')
-            this.get('overview')  
+            this.get('overview')
+            this.getReviewSql();
         },
-        favTv: function(){
-            if((this.favMovies && this.favTv)){
+        favTv: function () {
+            if ((this.favMovies && this.favTv)) {
                 this.fav = this.isFav()
             }
         },
-        favMovies: function(){
-            if((this.favMovies && this.favTv)){
+        favMovies: function () {
+            if ((this.favMovies && this.favTv)) {
                 this.fav = this.isFav()
             }
         },
-        overview : function(){
+        overview: function () {
             this.overview.title = typeof this.overview.title !== 'undefined' ? this.overview.title : this.overview.name
         }
     },
-    methods : {
+    methods: {
         changePage: function (obj) {
-            
-            let param = typeof obj.id === 'undefined' ? obj.keyword : obj.id 
-            let url = this.basePath +'/' +obj.page + '/' + param
+
+            let param = typeof obj.id === 'undefined' ? obj.keyword : obj.id
+            let url = this.basePath + '/' + obj.page + '/' + param
             window.location.assign(encodeURI(url))
         },
-        getPrgInfo: function(){
-            if(document.querySelector('#prg-info > input[name=type]') !== null){
-                this.type= document.querySelector('#prg-info > input[name=type]').getAttribute('value')
-                this.id= document.querySelector('#prg-info > input[name=id]').getAttribute('value')
+        getPrgInfo: function () {
+            if (document.querySelector('#prg-info > input[name=type]') !== null) {
+                this.type = document.querySelector('#prg-info > input[name=type]').getAttribute('value')
+                this.id = document.querySelector('#prg-info > input[name=id]').getAttribute('value')
             }
         },
         get: function (info) {
-            let urlRequest = api.base +'/'+this.type+'/'+ this.id+ '/' + info +api.key
-            urlRequest = (info == 'overview') ? api.base +'/'+ this.type+'/'+ this.id +api.key : urlRequest
-            this.getRequestApi(urlRequest,info)
+            let urlRequest = api.base + '/' + this.type + '/' + this.id + '/' + info + api.key
+            urlRequest = (info == 'overview') ? api.base + '/' + this.type + '/' + this.id + api.key : urlRequest
+            this.getRequestApi(urlRequest, info)
         },
-        getRequestApi: function(urlRequest,store){
+        getRequestApi: function (urlRequest, store) {
             fetch(urlRequest)
                 .then(response => response.json())
+                .then(json => this[store] = json)
+
+        },
+        getReviewSql: function () {
+            let url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id
+            fetch(url).then(response => response.json()).then(json => this['commentarySql'] = json)
+        },
+        getReviewReplySql: function () {
+            let url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id
+            fetch(url).then(response => response.json()).then(json => this['commentarySql'] = json)
                 .then(json => {
                     this[store] = json
                 })
         },
-        apiConnect: async function(){
+        apiConnect: async function () {
             let urlRequest = api.base + '/authentication/token/new' + api.key
-            let token = await fetch(urlRequest).then(response=>response.json())
-            if(!token.success){
-                console.log('Token request failed',token)
+            let token = await fetch(urlRequest).then(response => response.json())
+            if (!token.success) {
+                console.log('Token request failed', token)
                 return
             } else {
                 urlRequest = this.httpHost + this.basePath + '/token/set'
@@ -82,23 +94,23 @@ const app = Vue.createApp({
         getSession: async function(){
             let urlRequest = this.httpHost + this.basePath + '/session/get'
             let session = await fetch(urlRequest).then(reponse => reponse.json())
-            if(session.session.api_session.length > 0){
+            if (session.session.api_session.length > 0) {
                 this.apiSession.session_id = session.session.api_session
                 this.getFav()
-                console.log('Session already started',session)
+                console.log('Session already started', session)
                 return
             }
-            
+
 
             urlRequest = this.httpHost + this.basePath + '/token/get'
             let token = await fetch(urlRequest).then(reponse => reponse.json())
-            if(!token.success || token.token === "" || token.token === "undefined"){
-                return console.log('No token available',token)
+            if (!token.success || token.token === "" || token.token === "undefined") {
+                return console.log('No token available', token)
             }
-            urlRequest = 'https://api.themoviedb.org/3/authentication/session/new' + api.key + '&request_token='+ token.token
+            urlRequest = 'https://api.themoviedb.org/3/authentication/session/new' + api.key + '&request_token=' + token.token
             session = await fetch(urlRequest).then(reponse => reponse.json())
-            if(!session.success){
-                return console.log('No session return by api',session)
+            if (!session.success) {
+                return console.log('No session return by api', session)
             }
 
             urlRequest = this.httpHost + this.basePath + '/session/set'
@@ -109,130 +121,131 @@ const app = Vue.createApp({
 
             this.getFav()
         },
-        postFormData: async function(url,dataSet) {
+        postFormData: async function (url, dataSet) {
             let form = new FormData()
             for (const key in dataSet) {
                 if (dataSet.hasOwnProperty.call(dataSet, key)) {
                     const element = dataSet[key];
-                    form.append(key,element)
+                    form.append(key, element)
                 }
             }
-            let response = await fetch(url,{
-                method:'POST',
-                body:form
-            }).then(response=>response.json())
+            let response = await fetch(url, {
+                method: 'POST',
+                body: form
+            }).then(response => response.json())
             return response
         },
-        toggleFav:function(){
+        toggleFav: function () {
             console.log('toggle')
-            this.setFav(this.type,this.id,!this.isFav())
+            this.setFav(this.type, this.id, !this.isFav())
         },
-        getFav:async function(type){
-            if(typeof this.apiSession.session_id ==='undefined'){
+        getFav: async function (type) {
+            if (typeof this.apiSession.session_id === 'undefined') {
                 return
             }
 
-            let urlRequest = api.base +'/account/%7Baccount_id%7D/favorite/movies' + api.key + '&session_id=' + this.apiSession.session_id+ '&language=en-US&sort_by=created_at.asc&page=1'
-            this.getRequestApi(urlRequest,'favMovies')
+            let urlRequest = api.base + '/account/%7Baccount_id%7D/favorite/movies' + api.key + '&session_id=' + this.apiSession.session_id + '&language=en-US&sort_by=created_at.asc&page=1'
+            this.getRequestApi(urlRequest, 'favMovies')
 
-            urlRequest = api.base +'/account/%7Baccount_id%7D/favorite/tv' + api.key + '&session_id=' + this.apiSession.session_id+ '&language=en-US&sort_by=created_at.asc&page=1'
-            this.getRequestApi(urlRequest,'favTv')
+            urlRequest = api.base + '/account/%7Baccount_id%7D/favorite/tv' + api.key + '&session_id=' + this.apiSession.session_id + '&language=en-US&sort_by=created_at.asc&page=1'
+            this.getRequestApi(urlRequest, 'favTv')
         },
-        setFav:function(type,id,state){
-            if(typeof this.apiSession.session_id ==='undefined'){
+        setFav: function (type, id, state) {
+            if (typeof this.apiSession.session_id === 'undefined') {
                 return
             }
-            let urlRequest = api.base +'/account/%7Baccount_id%7D/favorite'+ api.key + '&session_id=' + this.apiSession.session_id
+            let urlRequest = api.base + '/account/%7Baccount_id%7D/favorite' + api.key + '&session_id=' + this.apiSession.session_id
             let fav = {
                 "media_type": type,
                 "media_id": id,
                 "favorite": state
-                }
-            fetch(urlRequest,{
+            }
+            fetch(urlRequest, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                  },
+                },
                 body: JSON.stringify(fav),
-                method:'POST',
-            }).then(reponse=>reponse.json()).then(json=>{
+                method: 'POST',
+            }).then(reponse => reponse.json()).then(json => {
                 console.log(json)
                 this.favMovies = false
                 this.favTv = false
                 this.getFav()
             })
         },
-        isFav:function(){
+        isFav: function () {
             let isFav = false
-            if(this.type == 'movie'){
+            if (this.type == 'movie') {
                 this.favMovies.results.forEach(fav => {
-                    if(fav.id==this.id){
+                    if (fav.id == this.id) {
                         isFav = true
                     }
                 })
             } else {
                 this.favTv.results.forEach(fav => {
-                    if(fav.id==this.id){
+                    if (fav.id == this.id) {
                         isFav = true
                     }
                 })
             }
             return isFav
         }
+
     },
-    mounted(){
+    mounted() {
         this.getPrgInfo()
         this.getSession()
     }
 })
 
-app.component('api-connect',{
+app.component('api-connect', {
     template:
-    `<button class='btn btn-primary' @click="$emit('apiConnect')">Connect</button>`
+        `<button class='btn btn-primary' @click="$emit('apiConnect')">Connect</button>`
 })
 
-app.component('search-modul',{
-    data(){
+app.component('search-modul', {
+    data() {
         return {
-            query:'',
-            dataList : {},
-            results : {},
+            query: '',
+            dataList: {},
+            results: {},
             picLowQual: api.picLowQual
         }
     },
-    props:['keywords'],
-    computed:{
+    props: ['keywords'],
+    computed: {
         showResults() {
             return this.keywords.length > 0 ? true : false
         },
     },
-    watch:{
-        query : function(){
+    watch: {
+        query: function () {
             this.getDataList()
         }
     },
-    methods:{
-        getDataList : function(){
-            let urlRequest = api.base +'/'+'search/multi' +api.key +'&query='+this.query
-            this.getRequestApi(urlRequest,'dataList')
+    methods: {
+        getDataList: function () {
+            let urlRequest = api.base + '/' + 'search/multi' + api.key + '&query=' + this.query
+            this.getRequestApi(urlRequest, 'dataList')
         },
-        getResults : function(){
-            let urlRequest = api.base +'/'+'search/multi' +api.key +'&query='+this.keywords
-            this.getRequestApi(urlRequest,'results')
+        getResults: function () {
+            let urlRequest = api.base + '/' + 'search/multi' + api.key + '&query=' + this.keywords
+            this.getRequestApi(urlRequest, 'results')
         },
-        getRequestApi: function(urlRequest,store){
+        getRequestApi: function (urlRequest, store) {
             fetch(urlRequest)
                 .then(response => response.json())
                 .then(json => this[store] = json)
         },
-        title : function(data){
+        title: function (data) {
             switch (data.media_type) {
                 case 'movie':
                     return data.title
                     break;
                 case 'tv':
                     return data.name
-                    break;    
+                    break;
                 default:
                     break;
             }
@@ -241,13 +254,13 @@ app.component('search-modul',{
             return (result.media_type === 'tv' || result.media_type === 'movie') && result.poster_path !== null ? true : false;
         }
     },
-    mounted(){
-        if(this.showResults){
-          this.getResults()
+    mounted() {
+        if (this.showResults) {
+            this.getResults()
         }
     },
     template:
-    `<div>
+        `<div>
         <teleport to="#searchBarPlaceHolder">
             <form @submit.prevent="$emit('changePage',{ page :'search', keyword:query})" class="d-flex">   
                 <input class="form-control me-2"  placeholder="Search" type="search" list="keywords" v-model="query" />
@@ -274,7 +287,7 @@ app.component('search-modul',{
     `
 })
 
-app.component('prg-overview',{
+app.component('prg-overview', {
     data() {
         return {
             picHighQual: api.picHighQual,
@@ -292,7 +305,7 @@ app.component('prg-overview',{
             }
         }
     },
-    props : ["info","fav"],
+    props: ["info", "fav"],
     template:
         `<div>
             <div class="prg_info">
@@ -309,28 +322,54 @@ app.component('prg-overview',{
         </div>`
 })
 
-app.component('prg-review',{
-    props:['review'],
+app.component('prg-review', {
+
+    props: ['review'],
     computed: {
-        imgAvatar(){
+
+        imgAvatar() {
             let nonePicPath = 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp'
-            let picPath =  this.review.author_details.avatar_path === null ? nonePicPath : this.review.author_details.avatar_path.substring(1)
-            return picPath.match(/^http/gmi) ? picPath : api.picLowQual + picPath       
+
+            if (typeof this.review.author_details == 'undefined') {
+
+                return this.review.image
+            }
+
+            let picPath = this.review.author_details.avatar_path === null ? nonePicPath : this.review.author_details.avatar_path.substring(1)
+            return picPath.match(/^http/gmi) ? picPath : api.picLowQual + picPath
+        },
+        rating() {
+            if (typeof this.review.author_details != 'undefined')
+                return this.review.author_details.rating + '/10'
+            else {
+                return ""
+            }
+        },
+        isApi() {
+            return { 'summary_review_api': (typeof this.review.author_details == 'undefined') ? false : true }
+        },
+        isReply() {
+            return { 'review_reply': (typeof this.review.author_details == 'undefined') && (typeof this.review.id_commentaire == 'undefined') ? true : false }
+        },
+        writeComment() {
+
         }
     },
-    template: 
-    `<details class="prg-review">
-        <summary class="prg-review__summary">{{review.author}} <span class="prg-review__note">({{review.author_details.rating}}/10)</span></summary>
+
+    template:
+        `<details class="prg-review" :class='isReply'>
+        <summary  class="prg-review__summary" :class='isApi' :class='isReply'>{{review.author}} <span class="prg-review__note">({{rating}})</span></summary>
         <img class="prg-review__avatar" v-bind:src="imgAvatar">
-        <p class="prg-review__content"> {{review.content}}</p>
+        <p class="prg-review__content" > {{review.content}}</p>
         <div class="prg-review__clear"></div>
+        
     </details>`
 })
 
 app.component('prg-casting', {
     props: ['actor'],
-    template: 
-    `<div class="prg-actor">
+    template:
+        `<div class="prg-actor">
         <img v-if="actor.profile_path" class="prg-actor__img" v-bind:src="\'https://image.tmdb.org/t/p/w500//\'+ actor.profile_path">
         <img v-else class="prg-actor__img" height="400" width="200" src="https://pukt.pl/wp-content/uploads/2019/12/YPS__human_avatar_portrait_photography_picture_photo-512-300x300.png">
         <p class="prg-actor__name">{{actor.name}} as {{actor.character}}</p>

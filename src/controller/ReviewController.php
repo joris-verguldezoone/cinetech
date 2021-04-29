@@ -11,7 +11,8 @@ class ReviewController extends Controller{
     public function get($request, $response, $args)
     {
         $ReviewModel = new \App\Model\ReviewModel();
-        $result = $ReviewModel->fetchReview_id_type(550, 'movie');
+        $result = $ReviewModel->fetchReview_id_type($args['id'], $args['type']);
+        
         
         $result = json_encode($result);
 

@@ -8,6 +8,7 @@ var app = Vue.createApp({
       credits: {},
       reviews: {},
       overview: {},
+      commentarySql: {},
       favMovies: false,
       favTv: false,
       apiSession: {},
@@ -27,6 +28,7 @@ var app = Vue.createApp({
       this.get('credits');
       this.get('reviews');
       this.get('overview');
+      this.getReviewSql();
     },
     favTv: function favTv() {
       if (this.favMovies && this.favTv) {
@@ -65,7 +67,29 @@ var app = Vue.createApp({
       fetch(urlRequest).then(function (response) {
         return response.json();
       }).then(function (json) {
-        _this[store] = json;
+        return _this[store] = json;
+      });
+    },
+    getReviewSql: function getReviewSql() {
+      var _this2 = this;
+
+      var url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id;
+      fetch(url).then(function (response) {
+        return response.json();
+      }).then(function (json) {
+        return _this2['commentarySql'] = json;
+      });
+    },
+    getReviewReplySql: function getReviewReplySql() {
+      var _this3 = this;
+
+      var url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id;
+      fetch(url).then(function (response) {
+        return response.json();
+      }).then(function (json) {
+        return _this3['commentarySql'] = json;
+      }).then(function (json) {
+        _this3[store] = json;
       });
     },
     apiConnect: function apiConnect() {
@@ -255,7 +279,7 @@ var app = Vue.createApp({
       }, null, this);
     },
     setFav: function setFav(type, id, state) {
-      var _this2 = this;
+      var _this4 = this;
 
       if (typeof this.apiSession.session_id === 'undefined') {
         return;
@@ -278,26 +302,26 @@ var app = Vue.createApp({
         return reponse.json();
       }).then(function (json) {
         console.log(json);
-        _this2.favMovies = false;
-        _this2.favTv = false;
+        _this4.favMovies = false;
+        _this4.favTv = false;
 
-        _this2.getFav();
+        _this4.getFav();
       });
     },
     isFav: function isFav() {
-      var _this3 = this;
+      var _this5 = this;
 
       var isFav = false;
 
       if (this.type == 'movie') {
         this.favMovies.results.forEach(function (fav) {
-          if (fav.id == _this3.id) {
+          if (fav.id == _this5.id) {
             isFav = true;
           }
         });
       } else {
         this.favTv.results.forEach(function (fav) {
-          if (fav.id == _this3.id) {
+          if (fav.id == _this5.id) {
             isFav = true;
           }
         });
@@ -344,12 +368,12 @@ app.component('search-modul', {
       this.getRequestApi(urlRequest, 'results');
     },
     getRequestApi: function getRequestApi(urlRequest, store) {
-      var _this4 = this;
+      var _this6 = this;
 
       fetch(urlRequest).then(function (response) {
         return response.json();
       }).then(function (json) {
-        return _this4[store] = json;
+        return _this6[store] = json;
       });
     },
     title: function title(data) {
@@ -403,11 +427,32 @@ app.component('prg-review', {
   computed: {
     imgAvatar: function imgAvatar() {
       var nonePicPath = 'https://static.wixstatic.com/media/109580_c3da31ed06484c7e8e225c46beecd507~mv2.png/v1/fill/w_220,h_220,al_c,q_85,usm_0.66_1.00_0.01/avatar%20neutre.webp';
+
+      if (typeof this.review.author_details == 'undefined') {
+        return this.review.image;
+      }
+
       var picPath = this.review.author_details.avatar_path === null ? nonePicPath : this.review.author_details.avatar_path.substring(1);
       return picPath.match(/^http/gmi) ? picPath : api.picLowQual + picPath;
-    }
+    },
+    rating: function rating() {
+      if (typeof this.review.author_details != 'undefined') return this.review.author_details.rating + '/10';else {
+        return "";
+      }
+    },
+    isApi: function isApi() {
+      return {
+        'summary_review_api': typeof this.review.author_details == 'undefined' ? false : true
+      };
+    },
+    isReply: function isReply() {
+      return {
+        'review_reply': typeof this.review.author_details == 'undefined' && typeof this.review.id_commentaire == 'undefined' ? true : false
+      };
+    },
+    writeComment: function writeComment() {}
   },
-  template: "<details class=\"prg-review\">\n        <summary class=\"prg-review__summary\">{{review.author}} <span class=\"prg-review__note\">({{review.author_details.rating}}/10)</span></summary>\n        <img class=\"prg-review__avatar\" v-bind:src=\"imgAvatar\">\n        <p class=\"prg-review__content\"> {{review.content}}</p>\n        <div class=\"prg-review__clear\"></div>\n    </details>"
+  template: "<details class=\"prg-review\" :class='isReply'>\n        <summary  class=\"prg-review__summary\" :class='isApi' :class='isReply'>{{review.author}} <span class=\"prg-review__note\">({{rating}})</span></summary>\n        <img class=\"prg-review__avatar\" v-bind:src=\"imgAvatar\">\n        <p class=\"prg-review__content\" > {{review.content}}</p>\n        <div class=\"prg-review__clear\"></div>\n        \n    </details>"
 });
 app.component('prg-casting', {
   props: ['actor'],
@@ -422,13 +467,13 @@ app.component('carrousel-custom', {
   props: ['size', 'request', 'filter'],
   methods: {
     getData: function getData() {
-      var _this5 = this;
+      var _this7 = this;
 
       var url = api.base + this.request + api.key + this.filter;
       fetch(url).then(function (response) {
         return response.json();
       }).then(function (json) {
-        return _this5.results = json.results;
+        return _this7.results = json.results;
       });
     }
   },

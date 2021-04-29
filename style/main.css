@@ -262,3 +262,14 @@ summary {
   top: 0;
   z-index: 20;
 }
+.summary_review_api{
+  color:gold;
+}
+.review_reply{
+  padding-left:50px;
+}
+#writeComment_section{
+  display: flex;
+  flex-direction: column;
+  width:40%;
+}
