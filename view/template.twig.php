@@ -19,6 +19,7 @@
 
     <form id='conf'>
         <input type="hidden" name="base_path" value={{BASE_PATH}}>
+        <input type="hidden" name="http_host" value={{HTTP_HOST}}>
     </form>
     {% include 'header.twig.php' %}
 

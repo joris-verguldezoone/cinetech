@@ -15,6 +15,9 @@ const app = Vue.createApp({
     computed: {
         basePath(){
             return document.querySelector('#conf>input[name=base_path]').getAttribute('value')
+        },
+        httpHost(){
+            return 'http://' + document.querySelector('#conf>input[name=http_host]').getAttribute('value')
         }
     },
     watch: {
@@ -69,7 +72,7 @@ const app = Vue.createApp({
                 console.log('Token request failed',token)
                 return
             } else {
-                urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set'
+                urlRequest = this.httpHost + this.basePath + '/token/set'
                 reponse = await this.postFormData(urlRequest,{"token":token.request_token})
                 console.log(reponse)
             }
@@ -77,7 +80,7 @@ const app = Vue.createApp({
             window.location.assign(urlRequest)
         },
         getSession: async function(){
-            let urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/get'
+            let urlRequest = this.httpHost + this.basePath + '/session/get'
             let session = await fetch(urlRequest).then(reponse => reponse.json())
             if(session.session.api_session.length > 0){
                 this.apiSession.session_id = session.session.api_session
@@ -87,7 +90,7 @@ const app = Vue.createApp({
             }
             
 
-            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get'
+            urlRequest = this.httpHost + this.basePath + '/token/get'
             let token = await fetch(urlRequest).then(reponse => reponse.json())
             if(!token.success || token.token === "" || token.token === "undefined"){
                 return console.log('No token available',token)
@@ -98,10 +101,10 @@ const app = Vue.createApp({
                 return console.log('No session return by api',session)
             }
 
-            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/set'
+            urlRequest = this.httpHost + this.basePath + '/session/set'
             this.postFormData(urlRequest,{'session':session.session_id})
             
-            urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set'
+            urlRequest = this.httpHost + this.basePath + '/token/set'
             reponse = this.postFormData(urlRequest,{"token":token.token})
 
             this.getFav()
@@ -430,6 +433,7 @@ app.component('favorite-list',{
         }
     },
     props:['favList'],
+    emits:['changePage'],
     methods:{
         type(result){
             return typeof result.title !== 'undefined' ? 'movie' : 'tv'

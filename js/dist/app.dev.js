@@ -17,6 +17,9 @@ var app = Vue.createApp({
   computed: {
     basePath: function basePath() {
       return document.querySelector('#conf>input[name=base_path]').getAttribute('value');
+    },
+    httpHost: function httpHost() {
+      return 'http://' + document.querySelector('#conf>input[name=http_host]').getAttribute('value');
     }
   },
   watch: {
@@ -89,7 +92,7 @@ var app = Vue.createApp({
               return _context.abrupt("return");
 
             case 9:
-              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set';
+              urlRequest = this.httpHost + this.basePath + '/token/set';
               _context.next = 12;
               return regeneratorRuntime.awrap(this.postFormData(urlRequest, {
                 "token": token.request_token
@@ -116,7 +119,7 @@ var app = Vue.createApp({
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/get';
+              urlRequest = this.httpHost + this.basePath + '/session/get';
               _context2.next = 3;
               return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
                 return reponse.json();
@@ -136,7 +139,7 @@ var app = Vue.createApp({
               return _context2.abrupt("return");
 
             case 9:
-              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/get';
+              urlRequest = this.httpHost + this.basePath + '/token/get';
               _context2.next = 12;
               return regeneratorRuntime.awrap(fetch(urlRequest).then(function (reponse) {
                 return reponse.json();
@@ -170,11 +173,11 @@ var app = Vue.createApp({
               return _context2.abrupt("return", console.log('No session return by api', session));
 
             case 21:
-              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/session/set';
+              urlRequest = this.httpHost + this.basePath + '/session/set';
               this.postFormData(urlRequest, {
                 'session': session.session_id
               });
-              urlRequest = 'http://127.0.0.1:8888' + this.basePath + '/token/set';
+              urlRequest = this.httpHost + this.basePath + '/token/set';
               reponse = this.postFormData(urlRequest, {
                 "token": token.token
               });
@@ -490,6 +493,7 @@ app.component('favorite-list', {
     };
   },
   props: ['favList'],
+  emits: ['changePage'],
   methods: {
     type: function type(result) {
       return typeof result.title !== 'undefined' ? 'movie' : 'tv';

@@ -10,14 +10,14 @@ class HomeController extends Controller
     public function main(Request $request, Response $response, $args)
     {
         $this->preloadTwig();
-        $response->getBody()->write($this->twig->render('home.twig.php', ["BASE_PATH" => BASE_PATH]));
+        $response->getBody()->write($this->twig->render('home.twig.php', ["BASE_PATH" => BASE_PATH, "HTTP_HOST" => HTTP_HOST]));
         return $response;
     }
     public function getInscription(Request $request, Response $response, $args)
     {
 
         $method = $request->getMethod();
-        if($method == 'POST'){
+        if ($method == 'POST') {
 
             $params = (array)$request->getParsedBody();
             $login = $params['createLogin'];
@@ -26,30 +26,31 @@ class HomeController extends Controller
             $confirm_password = $params['confirmCreatePassword'];
             var_dump($params);
             $InscriptionController = new \App\controller\InscriptionController();
-            $InscriptionController->register($login,$email,$password,$confirm_password);
-        }
-        else{
+            $InscriptionController->register($login, $email, $password, $confirm_password);
+        } else {
             $login = "";
             $email = "";
             $password = "";
             $confirm_password = "";
-
         }
 
         $this->preloadTwig();
-        $response->getBody()->write($this->twig->render('inscription.twig.php', 
-        ['BASE_PATH' => BASE_PATH, 'method' => $method, 
-        'login'=>$login , 'email' => $email, 'password' => $password , 'confirm_password' => $confirm_password]));
+        $response->getBody()->write($this->twig->render(
+            'inscription.twig.php',
+            [
+                'BASE_PATH' => BASE_PATH, "HTTP_HOST" => HTTP_HOST, 'method' => $method,
+                'login' => $login, 'email' => $email, 'password' => $password, 'confirm_password' => $confirm_password
+            ]
+        ));
 
 
 
         return $response;
-
     }
     public function getConnexion(Request $request, Response $response, $args)
     {
         $method = $request->getMethod();
-        if($method == 'POST'){
+        if ($method == 'POST') {
 
             $params = (array)$request->getParsedBody();
 
@@ -57,29 +58,28 @@ class HomeController extends Controller
             $password = $params['logPassword'];
 
             $InscriptionController = new \App\controller\ConnexionController();
-            $InscriptionController->connect($login,$password);
-        }
-        else{
+            $InscriptionController->connect($login, $password);
+        } else {
             $login = "";
             $email = "";
             $password = "";
             $confirm_password = "";
-
         }
 
         $this->preloadTwig();
-        $response->getBody()->write($this->twig->render('connexion.twig.php',
-        ['BASE_PATH' => BASE_PATH, 'method' => $method,'login'=>$login , 'password' => $password]));
+        $response->getBody()->write($this->twig->render(
+            'connexion.twig.php',
+            ['BASE_PATH' => BASE_PATH, 'method' => $method, 'login' => $login, 'password' => $password, "HTTP_HOST" => HTTP_HOST]
+        ));
 
 
 
         return $response;
-
     }
     public function getProfil(Request $request, Response $response, $args)
     {
         $method = $request->getMethod();
-        if($method == 'POST'){
+        if ($method == 'POST') {
 
             $params = (array)$request->getParsedBody();
 
@@ -88,12 +88,11 @@ class HomeController extends Controller
             $email = $params['profilEmail'];
             $password = $params['profilPassword'];
             $confirm_password = $params['confirmProfilPassword'];
-            
+
 
             $ProfilController = new \App\controller\ProfilController();
-            $ProfilController->modifyProfil($login,$password, $confirm_password, $email, $image);
-        }
-        else{
+            $ProfilController->modifyProfil($login, $password, $confirm_password, $email, $image);
+        } else {
             $image = "";
             $login = "";
             $email = "";
@@ -102,17 +101,16 @@ class HomeController extends Controller
         }
 
         $this->preloadTwig();
-        $response->getBody()->write($this->twig->render('profil.twig.php',
-        ['BASE_PATH' => BASE_PATH, 'method' => $method,'login'=>$login , 'password' => $password,
-        'email' => $email, 'image' => $image
-        ]));
+        $response->getBody()->write($this->twig->render(
+            'profil.twig.php',
+            [
+                'BASE_PATH' => BASE_PATH, "HTTP_HOST" => HTTP_HOST, 'method' => $method, 'login' => $login, 'password' => $password,
+                'email' => $email, 'image' => $image
+            ]
+        ));
 
 
 
         return $response;
-
     }
-    
-    
 }
- 
