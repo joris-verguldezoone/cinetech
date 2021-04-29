@@ -100,6 +100,15 @@ html, body, #app {
   transition: background-color 0.35s ease-out;
 }
 
+@media (max-width: 1000px) {
+  .modal {
+    flex-direction: column;
+  }
+  .modal__photo {
+    height: 40vh;
+    width: 100%;
+  }
+}
 .prg_info {
   position: relative;
   margin: 0 auto;
@@ -261,28 +270,4 @@ summary {
   left: 15px;
   top: 0;
   z-index: 20;
-}
-.summary_review_api{
-  color:gold;
-}
-.review_reply{
-  padding-left:50px;
-}
-#writeComment_section{
-  display: flex;
-  flex-direction: column;
-  width:40%;
-}
-summary{
-  width:50%;
-  display: flex;
-  align-items: center;
-}
-summary > button{
-  font-size:0.7em;
-  margin-left:50px;
-  /* height:20px; */
-    border-radius: 1em;
-    background-color: teal;
-    color: white;
 }
