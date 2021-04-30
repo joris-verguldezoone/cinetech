@@ -21,10 +21,10 @@ const app = Vue.createApp({
         httpHost() {
             return 'http://' + document.querySelector('#conf>input[name=http_host]').getAttribute('value')
         },
-        emptyFavorite(){
+        emptyFavorite() {
             let areEmpty = true
-            if(this.favMovies && this.favTv){
-                areEmpty = (this.favMovies.results.length >0  || this.favTv.results.length) >0? false: true
+            if (this.favMovies && this.favTv) {
+                areEmpty = (this.favMovies.results.length > 0 || this.favTv.results.length) > 0 ? false : true
             }
             return areEmpty
         }
@@ -206,9 +206,13 @@ const app = Vue.createApp({
             console.log(this.replyComment)
             let urlRequest = this.basePath + '/review/new/' + this.type + "/" + this.id
             let commentary = document.querySelector('#writeComment').value
-            reponse = this.postFormData(urlRequest, { "replyComment": this.replyComment, "commentary": commentary })
+            reponse = await this.postFormData(urlRequest, { "replyComment": this.replyComment, "commentary": commentary })
             console.log(reponse)
-        }
+            this.getReviewSql()
+
+
+        },
+
 
 
     },
@@ -285,6 +289,7 @@ app.component('search-modul', {
                 <input class="form-control me-2"  placeholder="Search" type="search" list="keywords" v-model="query" />
                 <datalist id="keywords">
                     <option v-for="result in dataList.results" :value="title(result)" />
+
                 </datalist>
                 <button class="btn btn-outline-danger" type="submit">Search</button>
             </form>
@@ -387,7 +392,7 @@ app.component('prg-review', {
                 return this.review.created_at.replace('T', ' ').substring(0, this.review.created_at.length - 8);
 
             }
-        }
+        },
 
     },
 
@@ -397,12 +402,12 @@ app.component('prg-review', {
                 <span class="prg-review__note">({{rating}})</span>
                 <button type="button" v-if='isReply_input' @click='$emit("addReply",{id_comment : review.id_commentaire})' 
                     :value="review.id_commentaire">Repondre
-                </button></summary>
-        
-        <img class="prg-review__avatar" v-bind:src="imgAvatar">
-        <p class="prg-review__content" > {{review.content}}</p>
-        <span class="date_format">{{dateFormat}}</span>
-
+                </button>
+                </summary>
+                <img class="prg-review__avatar" v-bind:src="imgAvatar">
+                <p class="prg-review__content" > {{review.content}}</p>
+                <span class="date_format">{{dateFormat}}</span>                
+                
         <div class="prg-review__clear"></div>
     </details>`
 })
