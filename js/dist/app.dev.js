@@ -12,7 +12,8 @@ var app = Vue.createApp({
       favMovies: false,
       favTv: false,
       apiSession: {},
-      fav: ''
+      fav: '',
+      replyComment: ""
     };
   },
   computed: {
@@ -82,7 +83,7 @@ var app = Vue.createApp({
     getReviewSql: function getReviewSql() {
       var _this2 = this;
 
-      var url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id;
+      var url = this.basePath + '/review/' + this.type + "/" + this.id;
       fetch(url).then(function (response) {
         return response.json();
       }).then(function (json) {
@@ -92,7 +93,7 @@ var app = Vue.createApp({
     getReviewReplySql: function getReviewReplySql() {
       var _this3 = this;
 
-      var url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id;
+      var url = +this.basePath + '/review/' + this.type + "/" + this.id;
       fetch(url).then(function (response) {
         return response.json();
       }).then(function (json) {
@@ -337,6 +338,37 @@ var app = Vue.createApp({
       }
 
       return isFav;
+    },
+    addReply: function addReply(event) {
+      this.replyComment = event.id_comment;
+      console.log(this.replyComment);
+    },
+    addComment: function addComment() {
+      var urlRequest, commentary;
+      return regeneratorRuntime.async(function addComment$(_context5) {
+        while (1) {
+          switch (_context5.prev = _context5.next) {
+            case 0:
+              console.log(this.replyComment);
+              urlRequest = this.basePath + '/review/new/' + this.type + "/" + this.id;
+              commentary = document.querySelector('#writeComment').value;
+              _context5.next = 5;
+              return regeneratorRuntime.awrap(this.postFormData(urlRequest, {
+                "replyComment": this.replyComment,
+                "commentary": commentary
+              }));
+
+            case 5:
+              reponse = _context5.sent;
+              console.log(reponse);
+              this.getReviewSql();
+
+            case 8:
+            case "end":
+              return _context5.stop();
+          }
+        }
+      }, null, this);
     }
   },
   mounted: function mounted() {
@@ -408,7 +440,7 @@ app.component('search-modul', {
       this.getResults();
     }
   },
-  template: "<div>\n        <teleport to=\"#searchBarPlaceHolder\">\n            <form @submit.prevent=\"$emit('changePage',{ page :'search', keyword:query})\" class=\"d-flex\">   \n                <input class=\"form-control me-2\"  placeholder=\"Search\" type=\"search\" list=\"keywords\" v-model=\"query\" />\n                <datalist id=\"keywords\">\n                    <option v-for=\"result in dataList.results\" :value=\"title(result)\" />\n                </datalist>\n                <button class=\"btn btn-outline-danger\" type=\"submit\">Search</button>\n            </form>\n        </teleport>\n        <div v-if=\"showResults\" >\n            <h2>Results for : {{keywords}}</h2>\n            <div class=\"result\" @click=\"$emit('changePage',{page:result.media_type , id:result.id})\" v-for=\"result in results.results\">\n                <div v-if=\"showResult(result)\">\n                    <img class=\"result__img\" v-bind:src=\"picLowQual + result.poster_path\">\n                    <div class=\"result__content\">\n                        <h3>{{title(result)}} <span class=\"result__type\">type: {{result.media_type }}</span></h3> \n                        <p>{{result.overview}}</p>\n                    </div>\n                    <div class=\"result__clear\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n    "
+  template: "<div>\n        <teleport to=\"#searchBarPlaceHolder\">\n            <form @submit.prevent=\"$emit('changePage',{ page :'search', keyword:query})\" class=\"d-flex\">   \n                <input class=\"form-control me-2\"  placeholder=\"Search\" type=\"search\" list=\"keywords\" v-model=\"query\" />\n                <datalist id=\"keywords\">\n                    <option v-for=\"result in dataList.results\" :value=\"title(result)\" />\n\n                </datalist>\n                <button class=\"btn btn-outline-danger\" type=\"submit\">Search</button>\n            </form>\n        </teleport>\n        <div v-if=\"showResults\" >\n            <h2>Results for : {{keywords}}</h2>\n            <div class=\"result\" @click=\"$emit('changePage',{page:result.media_type , id:result.id})\" v-for=\"result in results.results\">\n                <div v-if=\"showResult(result)\">\n                    <img class=\"result__img\" v-bind:src=\"picLowQual + result.poster_path\">\n                    <div class=\"result__content\">\n                        <h3>{{title(result)}} <span class=\"result__type\">type: {{result.media_type }}</span></h3> \n                        <p>{{result.overview}}</p>\n                    </div>\n                    <div class=\"result__clear\"></div>\n                </div>\n            </div>\n        </div>\n    </div>\n    "
 });
 app.component('prg-overview', {
   data: function data() {
@@ -465,9 +497,16 @@ app.component('prg-review', {
       } else {
         return false;
       }
+    },
+    dateFormat: function dateFormat() {
+      if (typeof this.review.author_details == 'undefined') {
+        return this.review.created_at.substring(0, this.review.created_at.length - 3);
+      } else {
+        return this.review.created_at.replace('T', ' ').substring(0, this.review.created_at.length - 8);
+      }
     }
   },
-  template: "<details class=\"prg-review\" :class='isReply'>\n        \n        <summary  class=\"prg-review__summary\" :class='isApi'  :class='isReply'>{{review.author}} <span class=\"prg-review__note\">({{rating}})</span><button type=\"button\" v-if='isReply_input' :value=\"review.id_commentaire\">Repondre</button></summary>\n        \n        <img class=\"prg-review__avatar\" v-bind:src=\"imgAvatar\">\n\n        <p class=\"prg-review__content\" > {{review.content}}</p>\n        <div class=\"prg-review__clear\"></div>\n        \n    </details>"
+  template: "<details class=\"prg-review\" :class='isReply'>\n            <summary  class=\"prg-review__summary\" :class='isApi' :class='isReply'>{{review.author}} \n                <span class=\"prg-review__note\">({{rating}})</span>\n                <button type=\"button\" v-if='isReply_input' @click='$emit(\"addReply\",{id_comment : review.id_commentaire})' \n                    :value=\"review.id_commentaire\">Repondre\n                </button>\n                </summary>\n                <img class=\"prg-review__avatar\" v-bind:src=\"imgAvatar\">\n                <p class=\"prg-review__content\" > {{review.content}}</p>\n                <span class=\"date_format\">{{dateFormat}}</span>                \n                \n        <div class=\"prg-review__clear\"></div>\n    </details>"
 });
 app.component('prg-casting', {
   props: ['actor'],

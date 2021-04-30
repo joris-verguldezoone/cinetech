@@ -75,11 +75,11 @@ const app = Vue.createApp({
 
         },
         getReviewSql: function () {
-            let url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id
+            let url =  this.basePath + '/review/' + this.type + "/" + this.id
             fetch(url).then(response => response.json()).then(json => this['commentarySql'] = json)
         },
         getReviewReplySql: function () {
-            let url = 'http://localhost' + this.basePath + '/review/' + this.type + "/" + this.id
+            let url = + this.basePath + '/review/' + this.type + "/" + this.id
             fetch(url).then(response => response.json()).then(json => this['commentarySql'] = json)
                 .then(json => {
                     this[store] = json
